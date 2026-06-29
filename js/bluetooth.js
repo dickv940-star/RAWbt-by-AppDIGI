@@ -1,18 +1,28 @@
-let printerDevice=null;
-let printerWrite=null;
+let printerDevice = null;
+let printerWrite = null;
 
 
 
 async function connectPrinter(){
 
-
 try{
+
+
+document.getElementById("status").innerHTML =
+"Connecting...";
+
 
 
 printerDevice =
 await navigator.bluetooth.requestDevice({
 
-acceptAllDevices:true
+acceptAllDevices:true,
+
+optionalServices:[
+
+"000018f0-0000-1000-8000-00805f9b34fb"
+
+]
 
 });
 
@@ -23,20 +33,57 @@ await printerDevice.gatt.connect();
 
 
 
-let services =
-await server.getPrimaryServices();
-
-
-
-alert(
-"Bluetooth Connected"
+let service =
+await server.getPrimaryService(
+"000018f0-0000-1000-8000-00805f9b34fb"
 );
 
 
 
-document.getElementById("status")
-.innerHTML=
+let chars =
+await service.getCharacteristics();
+
+
+
+for(let c of chars){
+
+
+if(
+c.properties.write ||
+c.properties.writeWithoutResponse
+){
+
+printerWrite=c;
+
+break;
+
+}
+
+
+}
+
+
+
+
+if(printerWrite){
+
+
+document.getElementById("status").innerHTML =
 "🟢 Bluetooth Connected Ready Print";
+
+
+alert("Printer siap print");
+
+
+}else{
+
+
+alert(
+"Printer terhubung tapi tidak ada channel print"
+);
+
+
+}
 
 
 
@@ -47,8 +94,13 @@ catch(e){
 
 console.log(e);
 
+
+document.getElementById("status").innerHTML =
+"Bluetooth gagal";
+
+
 alert(
-"Bluetooth gagal"
+"Bluetooth gagal connect"
 );
 
 
@@ -56,6 +108,7 @@ alert(
 
 
 }
+
 
 
 
@@ -63,13 +116,46 @@ alert(
 async function sendPrinter(data){
 
 
-if(!printerDevice){
+if(!printerWrite){
+
 
 alert(
-"Belum connect printer"
+"Hubungkan printer dulu"
 );
 
+
 return;
+
+
+}
+
+
+
+try{
+
+
+await printerWrite.writeValue(data);
+
+
+
+console.log(
+"Data terkirim"
+);
+
+
+
+}
+
+catch(e){
+
+
+console.log(e);
+
+
+alert(
+"Print gagal"
+);
+
 
 }
 
