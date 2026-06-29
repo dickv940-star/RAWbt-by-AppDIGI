@@ -1091,36 +1091,37 @@ s.innerHTML="Failed";
 
 async function printNow(){
 
-if(typeof initESC==="undefined"){
+if(!printerWrite){
 
-alert("ESC POS belum aktif");
+alert("Connect Bluetooth dulu");
 
 return;
 
 }
 
 
-let start =
-initESC();
+await sendPrinter(
+initESC()
+);
 
-}
 
-function goBack(){
+let img =
+imageToESC();
 
-    if(document.referrer){
 
-        history.back();
+if(img){
 
-    }else{
-
-        window.location.href="./";
-
-    }
+await sendPrinter(img);
 
 }
 
 
+await sendPrinter(
+cutPaper()
+);
 
+
+}
 
 // EDIT
 
