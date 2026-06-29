@@ -553,7 +553,10 @@ Connect Bluetooth
 <h3>Upload</h3>
 
 
-<input type="file" id="file" accept="image/*,.pdf">
+<input 
+type="file"
+id="file"
+accept="image/*,.pdf">
 
 
 </div>
@@ -830,42 +833,69 @@ let preview =
 document.getElementById("preview");
 
 
-file.onchange=function(e){
+const fileInput = document.getElementById("file");
+
+fileInput.addEventListener("change", function(e){
+
+let file = e.target.files[0];
+
+if(!file) return;
 
 
-let f=e.target.files[0];
+
+// GAMBAR JPG PNG
+
+if(file.type.startsWith("image/")){
 
 
-if(!f)return;
+let reader = new FileReader();
+
+
+reader.onload=function(ev){
+
+preview.src = ev.target.result;
+
+preview.style.display="block";
+
+drop.style.display="none";
+
+dragElement(preview);
+
+};
+
+
+reader.readAsDataURL(file);
+
+
+}
+
+
 
 
 
 // PDF
 
-if(f.type==="application/pdf"){
+else if(file.type==="application/pdf"){
 
 
 let reader=new FileReader();
 
 
-
 reader.onload=function(){
 
 
-let data =
+let typedarray =
 new Uint8Array(this.result);
 
 
 
-pdfjsLib
-.getDocument(data)
-.promise
-.then(function(pdf){
+pdfjsLib.getDocument(
+typedarray
+).promise.then(function(pdf){
 
 
-pdf.getPage(1)
-.then(function(page){
 
+pdf.getPage(1).then(function(page){
 
 
 let canvas =
@@ -900,17 +930,15 @@ canvasContext:ctx,
 viewport:viewport
 
 
-})
-.promise
-.then(function(){
-
+}).promise.then(function(){
 
 
 preview.src =
-canvas.toDataURL(
-"image/png"
-);
+canvas.toDataURL("image/png");
 
+
+
+preview.style.display="block";
 
 
 drop.style.display="none";
@@ -923,61 +951,31 @@ dragElement(preview);
 });
 
 
-
 });
 
 
 });
 
 
-
 }
 
 
-
-reader.readAsArrayBuffer(f);
-
+reader.readAsArrayBuffer(file);
 
 
 }
 
-
-
-// IMAGE
 
 else{
 
 
-let reader =
-new FileReader();
-
-
-
-reader.onload=function(x){
-
-
-preview.src =
-x.target.result;
-
-
-drop.style.display="none";
-
-
-dragElement(preview);
+alert("Format tidak didukung");
 
 
 }
 
 
-
-reader.readAsDataURL(f);
-
-
-}
-
-
-}
-
+});
 function zoom(v){
 
 scale+=v;
