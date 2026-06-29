@@ -2,7 +2,9 @@ let printerDevice=null;
 let printerWrite=null;
 
 
+
 async function connectPrinter(){
+
 
 try{
 
@@ -10,11 +12,7 @@ try{
 printerDevice =
 await navigator.bluetooth.requestDevice({
 
-acceptAllDevices:true,
-
-optionalServices:[
-"000018f0-0000-1000-8000-00805f9b34fb"
-]
+acceptAllDevices:true
 
 });
 
@@ -25,21 +23,13 @@ await printerDevice.gatt.connect();
 
 
 
-let service =
-await server.getPrimaryService(
-"000018f0-0000-1000-8000-00805f9b34fb"
-);
+let services =
+await server.getPrimaryServices();
 
 
 
-let chars =
-await service.getCharacteristics();
-
-
-
-printerWrite =
-chars.find(
-c=>c.properties.write
+alert(
+"Bluetooth Connected"
 );
 
 
@@ -55,13 +45,14 @@ document.getElementById("status")
 catch(e){
 
 
+console.log(e);
+
 alert(
-"Printer gagal connect"
+"Bluetooth gagal"
 );
 
 
 }
-
 
 
 }
@@ -72,23 +63,15 @@ alert(
 async function sendPrinter(data){
 
 
-if(!printerWrite){
+if(!printerDevice){
 
 alert(
-"Connect printer dulu"
+"Belum connect printer"
 );
 
 return;
 
 }
-
-
-await printerWrite.writeValue(data);
-
-
-alert(
-"Print berhasil dikirim"
-);
 
 
 }
