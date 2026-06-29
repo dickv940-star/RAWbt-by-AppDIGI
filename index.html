@@ -553,7 +553,7 @@ Connect Bluetooth
 <h3>Upload</h3>
 
 
-<input type="file" id="file">
+<input type="file" id="file" accept="image/*,.pdf">
 
 
 </div>
@@ -830,15 +830,17 @@ let preview =
 document.getElementById("preview");
 
 
-
-
-
 file.onchange=function(e){
+
 
 let f=e.target.files[0];
 
+
 if(!f)return;
 
+
+
+// PDF
 
 if(f.type==="application/pdf"){
 
@@ -846,19 +848,24 @@ if(f.type==="application/pdf"){
 let reader=new FileReader();
 
 
+
 reader.onload=function(){
 
 
-let typedarray =
+let data =
 new Uint8Array(this.result);
 
 
-pdfjsLib.getDocument(
-typedarray
-).promise.then(function(pdf){
+
+pdfjsLib
+.getDocument(data)
+.promise
+.then(function(pdf){
 
 
-pdf.getPage(1).then(function(page){
+pdf.getPage(1)
+.then(function(page){
+
 
 
 let canvas =
@@ -874,6 +881,7 @@ let viewport =
 page.getViewport({
 scale:2
 });
+
 
 
 canvas.width =
@@ -892,11 +900,17 @@ canvasContext:ctx,
 viewport:viewport
 
 
-}).promise.then(()=>{
+})
+.promise
+.then(function(){
+
 
 
 preview.src =
-canvas.toDataURL();
+canvas.toDataURL(
+"image/png"
+);
+
 
 
 drop.style.display="none";
@@ -905,33 +919,45 @@ drop.style.display="none";
 dragElement(preview);
 
 
+
+});
+
+
+
 });
 
 
 });
 
-
-});
 
 
 }
+
 
 
 reader.readAsArrayBuffer(f);
 
 
+
 }
+
+
+
+// IMAGE
 
 else{
 
 
-let r=new FileReader();
+let reader =
+new FileReader();
 
 
-r.onload=function(x){
+
+reader.onload=function(x){
 
 
-preview.src=x.target.result;
+preview.src =
+x.target.result;
 
 
 drop.style.display="none";
@@ -943,7 +969,8 @@ dragElement(preview);
 }
 
 
-r.readAsDataURL(f);
+
+reader.readAsDataURL(f);
 
 
 }
