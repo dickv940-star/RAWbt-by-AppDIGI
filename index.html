@@ -16,7 +16,7 @@
 
 
 <style>
-
+jl
 *{
 box-sizing:border-box;
 font-family:Segoe UI,Arial;
@@ -1053,38 +1053,26 @@ preview.style.transform=
 // BLUETOOTH
 
 
-async function connectBT(){
+let device = null;
+let server = null;
 
+async function connectBluetooth() {
+    let s = document.getElementById("status");
+    s.innerHTML = "Connecting...";
 
-let s=
-document.getElementById("status");
+    try {
+        device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [0xFFE0]
+        });
 
+        server = await device.gatt.connect();
 
-s.innerHTML="Connecting";
-
-
-
-try{
-
-
-await navigator.bluetooth.requestDevice({
-
-acceptAllDevices:true
-
-});
-
-
-
-s.innerHTML=
-"🟢 Bluetooth Connected Ready Print";
-
-
-}
-
-catch(e){
-
-s.innerHTML="Failed";
-
+        s.innerHTML = "🟢 Bluetooth Connected Ready Print";
+    } catch (e) {
+        console.error(e);
+        s.innerHTML = "❌ Failed";
+    }
 }
 
 
