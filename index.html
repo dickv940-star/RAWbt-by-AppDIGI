@@ -429,7 +429,7 @@ overflow:auto;
 justify-content:flex-start;
 
 }
-@media(max-width:850px){
+
 body{
 overflow-y:auto;
 }
@@ -497,11 +497,8 @@ by AppDIGI
 
 
 
-<button onclick="connectPrinter()">
-
-🔵 Bluetooth
-
-</button>
+<button class="blue"
+onclick="connectPrinter()">
 
 
 <span class="status" id="status">
@@ -696,7 +693,8 @@ RAWbt by AppDIGI
 32
 </option>
 
-
+</select>
+  
 <select id="paperSize">
 
 
@@ -1302,6 +1300,10 @@ alert(
 
 }
 
+</script>
+
+
+  
 <script src="js/bluetooth.js"></script>
 <script src="js/escpos.js"></script>
 <script src="js/thermal.js"></script>
