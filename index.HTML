@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>RAWbt AppDIGI</title>
+
+<link rel="manifest" href="manifest.json">
+
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Segoe UI,Arial;
+}
+
+
+body{
+margin:0;
+background:#eef4f8;
+}
+
+
+/* HEADER */
+
+header{
+
+height:60px;
+background:#1769c2;
+color:white;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:10px 15px;
+
+}
+
+
+.logo h2{
+margin:0;
+}
+
+
+.top button{
+
+margin-left:5px;
+
+}
+
+
+
+button{
+
+cursor:pointer;
+border:0;
+
+}
+
+
+
+.blue{
+
+background:#1769c2;
+color:white;
+padding:10px 15px;
+border-radius:10px;
+
+}
+
+
+
+.status{
+
+background:#32b946;
+padding:12px;
+border-radius:30px;
+
+}
+
+
+
+
+
+/* LAYOUT */
+
+.container{
+
+display:grid;
+grid-template-columns:260px 1fr 280px;
+
+height:calc(100vh - 115px);
+
+}
+
+
+
+
+.side{
+
+padding:15px;
+
+}
+
+
+
+.card{
+
+background:white;
+
+padding:15px;
+
+border-radius:15px;
+
+margin-bottom:15px;
+
+box-shadow:0 5px 15px #0002;
+
+}
+
+
+
+h3,h2{
+
+color:#1769c2;
+
+}
+
+
+
+
+
+/* CENTER */
+
+
+.workspace{
+
+background:#dce6ec;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+
+
+.toolbar{
+
+position:absolute;
+
+top:20px;
+
+background:white;
+
+padding:10px;
+
+border-radius:15px;
+
+z-index:5;
+
+box-shadow:0 5px 10px #0002;
+
+}
+
+
+.tool{
+
+background:#1769c2;
+
+color:white;
+
+padding:12px;
+
+border-radius:8px;
+
+}
+
+
+
+
+.paper{
+
+width:360px;
+
+min-height:520px;
+
+background:white;
+
+padding:30px;
+
+position:relative;
+
+overflow:hidden;
+
+box-shadow:0 0 20px #777;
+
+}
+
+
+
+.drop{
+
+height:230px;
+
+border:2px dashed #1769c2;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+text-align:center;
+
+color:#777;
+
+}
+
+
+
+
+.move{
+
+position:absolute;
+
+cursor:move;
+
+user-select:none;
+
+}
+
+
+
+#preview{
+
+max-width:80%;
+
+top:40px;
+
+left:35px;
+
+}
+
+
+
+.text{
+
+top:300px;
+
+left:50px;
+
+min-width:120px;
+
+outline:none;
+
+}
+
+
+
+.watermark{
+
+position:absolute;
+
+bottom:20px;
+
+left:0;
+
+right:0;
+
+text-align:center;
+
+padding-top:15px;
+
+border-top:1px dashed #ccc;
+
+color:#888;
+
+}
+
+
+
+
+
+/* RIGHT */
+
+.settings{
+
+background:white;
+
+padding:20px;
+
+}
+
+
+
+input,select{
+
+width:100%;
+
+padding:8px;
+
+}
+
+
+
+
+
+/* EDIT */
+
+.editbar{
+
+display:none;
+
+position:absolute;
+
+bottom:70px;
+
+background:white;
+
+padding:10px;
+
+border-radius:15px;
+
+z-index:10;
+
+box-shadow:0 5px 15px #0003;
+
+}
+
+
+
+
+/* FOOTER */
+
+.footer{
+
+position:fixed;
+
+bottom:0;
+
+width:100%;
+
+height:55px;
+
+background:white;
+
+display:flex;
+
+justify-content:center;
+
+gap:10px;
+
+padding:10px;
+
+box-shadow:0 -3px 10px #0002;
+
+}
+
+
+
+.footer button{
+
+background:#1769c2;
+
+color:white;
+
+border-radius:8px;
+
+padding:10px 25px;
+
+}
+
+
+
+
+/* MOBILE */
+
+
+@media(max-width:850px){
+
+
+.container{
+
+display:block;
+
+}
+
+
+.side,.settings{
+
+display:none;
+
+}
+
+
+.workspace{
+
+height:calc(100vh - 115px);
+
+}
+
+
+.paper{
+
+width:90%;
+
+}
+
+
+
+.footer{
+
+overflow:auto;
+
+justify-content:flex-start;
+
+}
+
+
+}
+
+
+
+
+</style>
+
+
+</head>
+
+<body>
+
+
+
+<header>
+
+
+<div class="logo">
+
+<h2>RAWbt</h2>
+
+<small>by AppDIGI</small>
+
+</div>
+
+
+
+<div class="top">
+
+
+<button class="blue" onclick="installApp()">
+
+⬇ Install
+
+</button>
+
+
+
+<button class="blue" onclick="connectBT()">
+
+🔵 Bluetooth
+
+</button>
+
+
+<span class="status" id="status">
+
+Ready
+
+</span>
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+
+
+<div class="container">
+
+
+
+<div class="side">
+
+
+
+<div class="card">
+
+<h3>Printer</h3>
+
+
+<button class="blue"
+onclick="connectBT()">
+
+Connect Bluetooth
+
+</button>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>Upload</h3>
+
+
+<input type="file" id="file">
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="workspace">
+
+
+
+<div class="toolbar">
+
+
+<button class="tool" onclick="zoom(-.1)">
+-
+</button>
+
+
+<button class="tool" onclick="zoom(.1)">
++
+</button>
+
+
+<button class="tool" onclick="rotate()">
+⟳
+</button>
+
+
+<button class="tool" onclick="fit()">
+Fit
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="paper" id="paper">
+
+
+
+<div class="drop" id="drop">
+
+📄
+<br>
+Drop Image / PDF
+
+</div>
+
+
+
+
+<img id="preview" class="move">
+
+
+
+<div class="text move" contenteditable="true">
+
+Tulis text
+
+</div>
+
+
+
+
+<div class="watermark">
+
+RAWbt by AppDIGI
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="editbar" id="editbar">
+
+
+<button onclick="addText()">
+
+➕
+
+</button>
+
+
+<button onclick="cmd('bold')">
+
+<b>B</b>
+
+</button>
+
+
+<button onclick="cmd('italic')">
+
+<i>I</i>
+
+</button>
+
+
+<button onclick="cmd('underline')">
+
+<u>U</u>
+
+</button>
+
+
+<select onchange="fontSize(this.value)">
+
+<option value="16">
+16
+</option>
+
+
+<option value="24">
+24
+</option>
+
+
+<option value="32">
+32
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="settings">
+
+
+<h2>
+
+Print Settings
+
+</h2>
+
+
+<select>
+
+<option>
+80 mm
+</option>
+
+
+<option>
+58 mm
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<input type="range"
+id="zoomRange"
+min="50"
+max="150"
+value="100">
+
+
+<br><br>
+
+
+<input type="range"
+id="rotateRange"
+min="0"
+max="360">
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="footer">
+
+
+<button onclick="history.back()">
+
+← Back
+
+</button>
+
+
+
+<button onclick="printNow()">
+
+🖨 Print
+
+</button>
+
+
+
+<button onclick="editMode()">
+
+✏ Edit Manual
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+let scale=1;
+let angle=0;
+
+
+let preview =
+document.getElementById("preview");
+
+
+
+
+
+file.onchange=function(e){
+
+
+let r=new FileReader();
+
+
+r.onload=function(x){
+
+
+preview.src=x.target.result;
+
+
+drop.style.display="none";
+
+
+dragElement(preview);
+
+
+}
+
+
+
+r.readAsDataURL(e.target.files[0]);
+
+
+}
+
+
+
+
+
+
+function zoom(v){
+
+scale+=v;
+
+
+preview.style.transform=
+`scale(${scale}) rotate(${angle}deg)`;
+
+}
+
+
+
+
+function rotate(){
+
+angle+=90;
+
+
+preview.style.transform=
+`scale(${scale}) rotate(${angle}deg)`;
+
+}
+
+
+
+function fit(){
+
+scale=1;
+angle=0;
+
+
+preview.style.transform="";
+
+
+}
+
+
+
+
+
+
+
+zoomRange.oninput=function(){
+
+scale=this.value/100;
+
+
+preview.style.transform=
+`scale(${scale}) rotate(${angle}deg)`;
+
+
+}
+
+
+
+
+
+rotateRange.oninput=function(){
+
+angle=this.value;
+
+
+preview.style.transform=
+`scale(${scale}) rotate(${angle}deg)`;
+
+
+}
+
+
+
+
+
+
+
+
+
+// BLUETOOTH
+
+
+async function connectBT(){
+
+
+let s=
+document.getElementById("status");
+
+
+s.innerHTML="Connecting...";
+
+
+
+try{
+
+
+await navigator.bluetooth.requestDevice({
+
+acceptAllDevices:true
+
+});
+
+
+
+s.innerHTML=
+"🟢 Bluetooth Connected Ready Print";
+
+
+}
+
+catch(e){
+
+s.innerHTML="Failed";
+
+}
+
+
+}
+
+
+
+
+
+
+
+function printNow(){
+
+
+if(
+status.innerText.includes("Connected")
+)
+
+alert("Print sent");
+
+
+else
+
+alert("Connect Bluetooth first");
+
+
+}
+
+
+
+
+
+
+// EDIT
+
+
+function editMode(){
+
+
+let e=
+document.getElementById("editbar");
+
+
+e.style.display=
+e.style.display=="block"
+?"none":"block";
+
+
+}
+
+
+
+
+
+function addText(){
+
+
+let t =
+document.createElement("div");
+
+
+t.className="text move";
+
+
+t.contentEditable=true;
+
+
+t.innerHTML="Text Baru";
+
+
+paper.appendChild(t);
+
+
+dragElement(t);
+
+
+}
+
+
+
+
+
+
+function cmd(c){
+
+document.execCommand(c);
+
+}
+
+
+
+
+
+function fontSize(v){
+
+document.execCommand(
+"fontSize",
+false,
+7
+);
+
+
+}
+
+
+
+
+
+
+
+// DRAG
+
+
+function dragElement(el){
+
+
+let x,y;
+
+
+el.onmousedown=function(e){
+
+
+x=e.clientX-el.offsetLeft;
+
+y=e.clientY-el.offsetTop;
+
+
+document.onmousemove=function(e){
+
+
+el.style.left=
+e.clientX-x+"px";
+
+
+el.style.top=
+e.clientY-y+"px";
+
+
+}
+
+
+
+document.onmouseup=function(){
+
+document.onmousemove=null;
+
+}
+
+
+}
+
+
+}
+
+
+
+
+
+document.querySelectorAll(".move")
+.forEach(x=>dragElement(x));
+
+
+
+
+
+
+
+// INSTALL APP
+
+
+let deferred;
+
+
+
+window.addEventListener(
+"beforeinstallprompt",
+e=>{
+
+e.preventDefault();
+
+deferred=e;
+
+
+});
+
+
+
+
+
+function installApp(){
+
+
+if(deferred)
+
+deferred.prompt();
+
+
+else
+
+alert(
+"Gunakan Chrome Android untuk install"
+);
+
+
+}
+
+
+
+</script>
+
+
+</body>
+</html>
