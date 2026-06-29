@@ -6,6 +6,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
 <title>RAWbt AppDIGI</title>
 
 <link rel="manifest" href="manifest.json">
@@ -792,6 +794,95 @@ document.getElementById("preview");
 
 file.onchange=function(e){
 
+let f=e.target.files[0];
+
+if(!f)return;
+
+
+if(f.type==="application/pdf"){
+
+
+let reader=new FileReader();
+
+
+reader.onload=function(){
+
+
+let typedarray =
+new Uint8Array(this.result);
+
+
+pdfjsLib.getDocument(
+typedarray
+).promise.then(function(pdf){
+
+
+pdf.getPage(1).then(function(page){
+
+
+let canvas =
+document.createElement("canvas");
+
+
+let ctx =
+canvas.getContext("2d");
+
+
+
+let viewport =
+page.getViewport({
+scale:2
+});
+
+
+canvas.width =
+viewport.width;
+
+
+canvas.height =
+viewport.height;
+
+
+
+page.render({
+
+canvasContext:ctx,
+
+viewport:viewport
+
+
+}).promise.then(()=>{
+
+
+preview.src =
+canvas.toDataURL();
+
+
+drop.style.display="none";
+
+
+dragElement(preview);
+
+
+});
+
+
+});
+
+
+});
+
+
+}
+
+
+reader.readAsArrayBuffer(f);
+
+
+}
+
+else{
+
 
 let r=new FileReader();
 
@@ -811,16 +902,13 @@ dragElement(preview);
 }
 
 
-
-r.readAsDataURL(e.target.files[0]);
+r.readAsDataURL(f);
 
 
 }
 
 
-
-
-
+}
 
 function zoom(v){
 
@@ -860,10 +948,6 @@ preview.style.transform="";
 
 
 
-
-
-
-
 zoomRange.oninput=function(){
 
 scale=this.value/100;
@@ -876,9 +960,6 @@ preview.style.transform=
 }
 
 
-
-
-
 rotateRange.oninput=function(){
 
 angle=this.value;
@@ -889,12 +970,6 @@ preview.style.transform=
 
 
 }
-
-
-
-
-
-
 
 
 
