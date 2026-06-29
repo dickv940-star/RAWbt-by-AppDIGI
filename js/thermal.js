@@ -1,78 +1,38 @@
 function imageToESC(){
 
-
-let canvas =
-document.createElement("canvas");
-
-
 let img =
 document.getElementById("preview");
 
 
+if(!img || !img.src){
 
-let width =
-document.getElementById("paperSize")
-.value=="58"
-?
-384
-:
-576;
+alert("Tidak ada gambar");
 
+return null;
+
+}
 
 
-canvas.width=width;
-
-
-canvas.height=
-img.height;
-
+let canvas =
+document.createElement("canvas");
 
 
 let ctx =
 canvas.getContext("2d");
 
 
+canvas.width = img.naturalWidth || 384;
+canvas.height = img.naturalHeight || 300;
+
 
 ctx.drawImage(
 img,
 0,
-0,
-width,
-canvas.height
+0
 );
 
 
 
-let imageData =
-ctx.getImageData(
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-
-
-return convertBitmap(imageData);
-
-}
-
-
-
-
-function convertBitmap(data){
-
-
-return new Uint8Array(
-
-[
-0x1D,
-0x76,
-0x30,
-0x00
-
-]
-
-);
+return canvas.toDataURL();
 
 }
