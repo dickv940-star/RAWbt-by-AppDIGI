@@ -1,163 +1,137 @@
 let printerDevice = null;
+let printerServer = null;
+let printerService = null;
 let printerWrite = null;
 
+const SERVICE_UUID = "000018f0-0000-1000-8000-00805f9b34fb";
 
+async function connectPrinter() {
 
-async function connectPrinter(){
+    const status = document.getElementById("status");
 
-try{
+    try {
 
+        status.innerHTML = "🔄 Connecting...";
 
-document.getElementById("status").innerHTML =
-"Connecting...";
+        printerDevice = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [SERVICE_UUID]
+        });
 
+        printerDevice.addEventListener(
+            "gattserverdisconnected",
+            onDisconnected
+        );
 
+        printerServer = await printerDevice.gatt.connect();
 
-printerDevice =
-await navigator.bluetooth.requestDevice({
+        printerService = await printerServer.getPrimaryService(SERVICE_UUID);
 
-acceptAllDevices:true,
+        const characteristics =
+            await printerService.getCharacteristics();
 
-optionalServices:[
+        printerWrite = null;
 
-"000018f0-0000-1000-8000-00805f9b34fb"
+        console.log("=== Characteristic Printer ===");
 
-]
+        for (const c of characteristics) {
 
-});
+            console.log(c.uuid, c.properties);
 
+            if (
+                c.properties.write ||
+                c.properties.writeWithoutResponse
+            ) {
+                printerWrite = c;
+                break;
+            }
 
+        }
 
-let server =
-await printerDevice.gatt.connect();
+        if (!printerWrite) {
+            status.innerHTML = "❌ Printer tidak mendukung Write";
+            alert("Printer terhubung tetapi channel print tidak ditemukan.");
+            return;
+        }
 
+        status.innerHTML = "🟢 Bluetooth Connected Ready Print";
+        alert("Printer siap digunakan.");
 
+    } catch (e) {
 
-let service =
-await server.getPrimaryService(
-"000018f0-0000-1000-8000-00805f9b34fb"
-);
+        console.error(e);
 
+        printerDevice = null;
+        printerServer = null;
+        printerService = null;
+        printerWrite = null;
 
+        status.innerHTML = "❌ Bluetooth gagal";
 
-let chars =
-await service.getCharacteristics();
+        alert("Bluetooth gagal connect.");
 
-
-
-for(let c of chars){
-
-
-if(
-c.properties.write ||
-c.properties.writeWithoutResponse
-){
-
-printerWrite=c;
-
-break;
-
-}
-
-
-}
-
-
-
-
-if(printerWrite){
-
-
-document.getElementById("status").innerHTML =
-"🟢 Bluetooth Connected Ready Print";
-
-
-alert("Printer siap print");
-
-
-}else{
-
-
-alert(
-"Printer terhubung tapi tidak ada channel print"
-);
-
+    }
 
 }
 
+function onDisconnected() {
 
+    printerServer = null;
+    printerService = null;
+    printerWrite = null;
 
-}
-
-catch(e){
-
-
-console.log(e);
-
-
-document.getElementById("status").innerHTML =
-"Bluetooth gagal";
-
-
-alert(
-"Bluetooth gagal connect"
-);
-
+    document.getElementById("status").innerHTML =
+        "🔴 Printer Disconnect";
 
 }
 
+async function sendPrinter(data) {
+
+    if (
+        !printerDevice ||
+        !printerDevice.gatt.connected ||
+        !printerWrite
+    ) {
+
+        alert("Hubungkan printer dulu.");
+
+        return;
+
+    }
+
+    try {
+
+        await printerWrite.writeValue(data);
+
+        console.log("Data berhasil dikirim.");
+
+    } catch (e) {
+
+        console.error(e);
+
+        alert("Print gagal.");
+
+    }
 
 }
 
+async function disconnectPrinter() {
 
+    if (
+        printerDevice &&
+        printerDevice.gatt.connected
+    ) {
 
+        printerDevice.gatt.disconnect();
 
+    }
 
-async function sendPrinter(data){
+    printerServer = null;
+    printerService = null;
+    printerWrite = null;
 
-
-if(!printerWrite){
-
-
-alert(
-"Hubungkan printer dulu"
-);
-
-
-return;
-
-
-}
-
-
-
-try{
-
-
-await printerWrite.writeValue(data);
-
-
-
-console.log(
-"Data terkirim"
-);
-
-
+    document.getElementById("status").innerHTML =
+        "⚪ Bluetooth Disconnect";
 
 }
 
-catch(e){
-
-
-console.log(e);
-
-
-alert(
-"Print gagal"
-);
-
-
-}
-
-
-}
