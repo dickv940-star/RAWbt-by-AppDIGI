@@ -498,13 +498,15 @@ by AppDIGI
 
 
 <button class="blue"
-onclick="connectPrinter()">
+onclick="connectBT()"
+
+🔵 Bluetooth
+
+</button>
 
 
 <span class="status" id="status">
-
 Ready
-
 </span>
 
 
@@ -887,6 +889,15 @@ new Uint8Array(this.result);
 
 
 
+if(typeof pdfjsLib==="undefined"){
+
+alert("PDF engine belum aktif");
+
+return;
+
+}
+
+
 pdfjsLib.getDocument(
 typedarray
 ).promise.then(function(pdf){
@@ -1080,34 +1091,19 @@ s.innerHTML="Failed";
 
 async function printNow(){
 
+if(typeof initESC==="undefined"){
+
+alert("ESC POS belum aktif");
+
+return;
+
+}
+
 
 let start =
 initESC();
 
-
-await sendPrinter(
-start
-);
-
-
-
-let img =
-imageToESC();
-
-
-
-await sendPrinter(
-img
-);
-
-
-
-await sendPrinter(
-cutPaper()
-);
-
-
-
+...
 }
 
 function goBack(){
@@ -1301,7 +1297,6 @@ alert(
 }
 
 </script>
-
 
   
 <script src="js/bluetooth.js"></script>
