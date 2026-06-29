@@ -463,7 +463,10 @@ margin-bottom:80px;
 
 </style>
 
-
+<script src="js/bluetooth.js"></script>
+<script src="js/escpos.js"></script>
+<script src="js/thermal.js"></script>
+  
 </head>
 
 <body>
@@ -498,7 +501,7 @@ by AppDIGI
 
 
 
-<button class="blue" onclick="connectBT()">
+<button onclick="connectPrinter()">
 
 🔵 Bluetooth
 
@@ -692,6 +695,19 @@ RAWbt by AppDIGI
 
 <option value="32">
 32
+</option>
+
+
+<select id="paperSize">
+
+
+<option value="80">
+80 mm
+</option>
+
+
+<option value="58">
+58 mm
 </option>
 
 
@@ -1043,24 +1059,34 @@ s.innerHTML="Failed";
 }
 
 
+async function printNow(){
+
+
+let start =
+initESC();
+
+
+await sendPrinter(
+start
+);
 
 
 
+let img =
+imageToESC();
 
 
-function printNow(){
+
+await sendPrinter(
+img
+);
 
 
-if(
-status.innerText.includes("Connected")
-)
 
-alert("Print sent");
+await sendPrinter(
+cutPaper()
+);
 
-
-else
-
-alert("Connect Bluetooth first");
 
 
 }
