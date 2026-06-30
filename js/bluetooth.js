@@ -1,4 +1,4 @@
-console.log("bluetooth.js berhasil dimuat");
+console.log("Bluetooth JS Loaded");
 // ===============================
 // RAWbt by AppDIGI
 // Bluetooth Manager v2
