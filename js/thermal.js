@@ -44,15 +44,16 @@ img.naturalHeight *
 (width/img.naturalWidth);
 
 
+ctx.fillStyle = "#FFFFFF";
+ctx.fillRect(0,0,canvas.width,canvas.height);
 
 ctx.drawImage(
-img,
-0,
-0,
-canvas.width,
-canvas.height
+    img,
+    0,
+    0,
+    canvas.width,
+    canvas.height
 );
-
 
 
 let data =
@@ -71,94 +72,61 @@ return convertBitmap(data);
 
 
 
+function convertBitmap(img) {
 
+    const width = img.width;
+    const height = img.height;
 
-function convertBitmap(img){
+    const bytesPerRow = Math.ceil(width / 8);
 
+    const data = [];
 
-let width =
-img.width;
+    data.push(
+        0x1D,
+        0x76,
+        0x30,
+        0x00,
+        bytesPerRow & 0xFF,
+        (bytesPerRow >> 8) & 0xFF,
+        height & 0xFF,
+        (height >> 8) & 0xFF
+    );
 
+    for (let y = 0; y < height; y++) {
 
-let height =
-img.height;
+        for (let xb = 0; xb < bytesPerRow; xb++) {
 
+            let byte = 0;
 
-let bytes=[];
+            for (let bit = 0; bit < 8; bit++) {
 
+                const x = xb * 8 + bit;
 
+                if (x >= width) continue;
 
-for(let y=0;y<height;y+=8){
+                const pos = (y * width + x) * 4;
 
+                const r = img.data[pos];
+                const g = img.data[pos + 1];
+                const b = img.data[pos + 2];
 
-for(let x=0;x<width;x+=8){
+                const gray = (r + g + b) / 3;
 
+                if (gray < 128) {
 
-let byte=0;
+                    byte |= (0x80 >> bit);
 
+                }
 
+            }
 
-for(let yy=0;yy<8;yy++){
+            data.push(byte);
 
+        }
 
-for(let xx=0;xx<8;xx++){
+    }
 
-
-let pos =
-((y+yy)*width+(x+xx))*4;
-
-
-
-if(pos < img.data.length){
-
-
-let gray =
-img.data[pos]+
-img.data[pos+1]+
-img.data[pos+2];
-
-
-if(gray < 400){
-
-byte |=
-1 << (7-xx);
-
-}
-
-}
-
-
-}
-
+    return new Uint8Array(data);
 
 }
 
-
-
-bytes.push(byte);
-
-
-}
-
-
-}
-
-
-
-let result =
-new Uint8Array(bytes.length);
-
-
-
-for(let i=0;i<bytes.length;i++){
-
-result[i]=bytes[i];
-
-}
-
-
-
-return result;
-
-
-}
