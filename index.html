@@ -15,6 +15,7 @@
 <link rel="manifest" href="manifest.json">
 
 
+
 <style>
 *{
 box-sizing:border-box;
@@ -31,60 +32,47 @@ background:#eef4f8;
 /* HEADER */
 
 header{
-
-height:52px;
+height:60px;
 background:#1769c2;
 color:white;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:8px 12px;
-
+padding:0 20px;
+box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
-
-
+  
 .logo h2{
 margin:0;
 }
-
 
 .top button{
 margin-left:5px;
 
 }
 
-
-
 button{
-
 cursor:pointer;
 border:0;
 
 }
 
-
-
 .blue{
-
 background:#1769c2;
-color:white;
-padding:10px 15px;
+color:#fff;
+height:42px;
+padding:0 18px;
 border-radius:10px;
-
+font-size:15px;
+font-weight:bold;
 }
 
-
-
 .status{
-
 background:#32b946;
 padding:12px;
 border-radius:30px;
 
 }
-
-
-
 
 
 /* LAYOUT */
@@ -105,67 +93,66 @@ box-shadow:0 5px 15px #0002;
 
 }
 
-
-
 h3,h2{
 color:#1769c2;
 
 }
 
 
-
-
-
 /* CENTER */
-
 
 .workspace{
 width:100%;
 display:flex;
-justify-content:center;
+flex-direction:column;
 align-items:center;
 padding-bottom:90px;
-position:relative;
+
 }
-
-
-.toolbar{
-position:absolute;
-top:10px;
-left:50%;
-transform:translateX(-50%);
+  
+.topbar{
+width:95%;
+max-width:900px;
 display:flex;
-gap:8px;
-background:#fff;
-padding:8px 12px;
-border-radius:30px;
-box-shadow:0 3px 12px rgba(0,0,0,.15);
-z-index:20;
+justify-content:space-between;
+align-items:center;
+margin:20px auto;
+gap:20px;
+}
+  
+.toolbar{
+display:flex;
+gap:10px;
+background:white;
+padding:10px;
+border-radius:18px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
 
 }
 
 .tool{
-width:42px;
-height:42px;
+width:48px;
+height:48px;
 padding:0;
 display:flex;
 align-items:center;
 justify-content:center;
 font-size:18px;
-
+border-radius:10px;
+background:#1769c2;
+color:white;
 }
 
-
 .paper{
-margin-top:70px;
 width:360px;
 min-height:520px;
-background:white;
+margin:15px auto 20px;
+background:#fff;
 padding:30px;
 position:relative;
 overflow:hidden;
-box-shadow:0 0 20px #777;
-
+border-radius:0;
+box-shadow:0 8px 25px rgba(0,0,0,.18);
 }
 
 .drop{
@@ -213,8 +200,6 @@ color:#888;
 
 }
 
-
-
 /* RIGHT */
 
 .settings{
@@ -229,8 +214,6 @@ padding:8px;
 
 }
 
-
-
 /* EDIT */
 
 .editbar{
@@ -242,8 +225,6 @@ bottom:82px;
 border-radius:15px;
 }
 
-
-
 /* FOOTER */
 
 .footer{
@@ -251,25 +232,21 @@ position:fixed;
 bottom:0;
 left:0;
 right:0;
-display:grid;  
-grid-template-columns:repeat(4,1fr);
+display:grid;
+grid-template-columns:repeat(3,1fr);
+align-items:center;
 height:72px;
 background:#fff;
-display:flex;
-align-items:center;
-justify-content:space-around;
 padding:10px;
 gap:10px;
 box-shadow:0 -3px 10px #0002;
 z-index:9999;
 }
-
+  
 .footer button{
-flex:1;
 height:52px;
 font-weight:bold;
 font-size:15px;
-max-width:none;
 padding:10px 5px;
 font-size:14px;
 background:#1769c2;
@@ -286,85 +263,96 @@ body{
 /* MOBILE */
 
 
-@media(max-width:850px){
+@media (max-width:850px){
 
+/* HEADER */
 
-.container{
-
-display:block;
-
+header{
+    flex-wrap:wrap;
+    height:auto;
+    padding:10px;
 }
 
-.workspace{
-min-height:calc(100vh - 140px);
-
-}
-
-
-.paper{
-
-width:90%;
-
-}
-
-
-
-.footer{
-
-overflow:auto;
-
-justify-content:flex-start;
-
-}
-
-body{
-overflow-y:auto;
-}
-
-
-.container{
-
-height:auto;
-min-height:100vh;
-
-}
-
-
-.workspace{
-
-height:650px;
-
-}
-
-
-.paper{
-
-margin-bottom:80px;
-
-}
- .logo{
-
-display:flex;
-flex-direction:column;
-
+.logo{
+    display:flex;
+    flex-direction:column;
 }
 
 .appname{
-font-size:22px;
-font-weight:bold;
-
+    font-size:22px;
+    font-weight:bold;
 }
 
 .brand{
-font-size:12px;
-opacity:.8;
-
-} 
-  
+    font-size:12px;
+    opacity:.8;
 }
 
+/* TOP BAR */
 
+.topbar{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin:15px 0;
+}
 
+.topbar .blue{
+    width:100%;
+    height:50px;
+}
+
+.toolbar{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:8px;
+}
+
+/* WORKSPACE */
+
+.container{
+    display:block;
+    min-height:100vh;
+}
+
+.workspace{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:auto;
+    height:auto;
+}
+
+/* PAPER */
+
+.paper{
+    width:95%;
+    margin-top:15px;
+    margin-bottom:90px;
+}
+
+/* FOOTER */
+
+.footer{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    overflow:visible;
+}
+
+.footer button{
+    width:100%;
+    font-size:14px;
+}
+
+body{
+    overflow-y:auto;
+    padding-bottom:90px;
+}
+
+}
 
 </style>
   
@@ -373,9 +361,7 @@ opacity:.8;
 <body>
 
 
-
 <header>
-
 
 <div class="logo">
 
@@ -389,28 +375,15 @@ by AppDIGI
 
 </div>
 
-
-
 <div class="top">
 
-
 <button class="blue" onclick="installApp()">
-
 ⬇ Install
-
 </button>
-
-
-
-<button class="blue" onclick="connectPrinter()">
-🔵 Bluetooth
-</button>
-
 
 <span class="status" id="status">
 Ready
 </span>
-  
 
 </div>
 
@@ -421,43 +394,43 @@ Ready
 
 
 <div class="workspace">
-  
+
 <input
 type="file"
 id="file"
 accept="image/*,.pdf"
 style="display:none;">
 
-<div class="toolbar">
+<div class="topbar">
 
-
-<button class="tool" onclick="zoom(-.1)">
--
+<button class="blue"
+onclick="connectPrinter()">
+🔵 Bluetooth
 </button>
 
+<div class="toolbar">
+
+<button class="tool" onclick="zoom(-.1)">
+−
+</button>
 
 <button class="tool" onclick="zoom(.1)">
 +
 </button>
 
-
 <button class="tool" onclick="rotate()">
 ⟳
 </button>
-
 
 <button class="tool" onclick="fit()">
 Fit
 </button>
 
-
 </div>
-<div style="margin-bottom:15px;text-align:center;">
 
 <button class="blue"
-onclick="openFile()"
-style="width:100%;height:55px;font-size:18px;">
-📂 Upload Gambar / PDF
+onclick="back()">
+← Back
 </button>
 
 </div>
@@ -476,7 +449,6 @@ Drop Image / PDF
 
 
 <img id="preview" class="move">
-
 
 
 <div class="text move" contenteditable="true">
@@ -532,31 +504,19 @@ max="360">
 
 <div class="footer">
 
-
-<button onclick="back();">← Back</button>
-
-  <button onclick="openFile()">
+<button onclick="openFile()">
 📂 Upload
 </button>
 
 <button onclick="printNow()">
-
 🖨 Print
-
 </button>
-
-
 
 <button onclick="editMode()">
-
 ✏ Edit Manual
-
 </button>
 
-
-
 </div>
-
 
 
 <script>
