@@ -592,7 +592,7 @@ preview.style.display="block";
 
 drop.style.display="none";
 
-dragElement(preview);
+Element(preview);
 
 };
 
@@ -854,49 +854,37 @@ false,
 
 // DRAG
 
-function dragElement(el){
+const paper = document.getElementById("paper");
 
-    let dragging = false;
-    let startX = 0;
-    let startY = 0;
+let drag = false;
+let startX = 0;
+let startY = 0;
 
-    el.style.touchAction = "none";
+paper.addEventListener("pointerdown", (e)=>{
 
-    el.addEventListener("pointerdown", function(e){
+    drag = true;
 
-        dragging = true;
+    startX = e.clientX - currentState.x;
+    startY = e.clientY - currentState.y;
 
-        startX = e.clientX;
-        startY = e.clientY;
+    paper.setPointerCapture(e.pointerId);
 
-        el.setPointerCapture(e.pointerId);
+});
 
-    });
+paper.addEventListener("pointermove", (e)=>{
 
-    el.addEventListener("pointermove", function(e){
+    if(!drag) return;
 
-        if(!dragging) return;
+    currentState.x = e.clientX - startX;
+    currentState.y = e.clientY - startY;
 
-        let dx = e.clientX - startX;
-        let dy = e.clientY - startY;
+    applyTransform();
 
-        startX = e.clientX;
-        startY = e.clientY;
+});
 
-        currentState.x += dx;
-        currentState.y += dy;
-
-        applyTransform();
-
-    });
-
-    function stopDrag(){
-        dragging = false;
-    }
-
-    el.addEventListener("pointerup", stopDrag);
-    el.addEventListener("pointercancel", stopDrag);
-
+paper.addEventListener("pointerup", ()=> drag = false);
+paper.addEventListener("pointercancel", ()=> drag = false);
+  
 }
 
 function saveState() {
