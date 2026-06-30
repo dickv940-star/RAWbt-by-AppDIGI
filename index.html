@@ -783,6 +783,11 @@ max="360">
 
 <script>
   
+console.log("SCRIPT INDEX MULAI");
+window.onerror = function(msg, url, line){
+    console.error("ERROR :", msg, "baris", line);
+};
+  
 const drop = document.getElementById("drop");
 const paper = document.getElementById("paper");
 
