@@ -559,22 +559,24 @@ window.addEventListener("DOMContentLoaded", () => {
     const drop = document.getElementById("drop");
     const preview = document.getElementById("preview");
 
-    if(!fileInput || !preview || !drop){
-        console.error("DOM belum lengkap");
+    if(!fileInput || !drop || !preview){
+        console.error("DOM tidak ditemukan");
         return;
     }
 
     fileInput.addEventListener("change", (e) => {
 
-        console.log("FILE DIPILIH");
+        console.log("CHANGE EVENT JALAN");
 
-        let file = e.target.files[0];
+        const file = e.target.files[0];
+        console.log("FILE:", file);
+
         if(!file) return;
 
         // IMAGE
         if(file.type.startsWith("image/")){
 
-            let reader = new FileReader();
+            const reader = new FileReader();
 
             reader.onload = (ev) => {
                 preview.src = ev.target.result;
