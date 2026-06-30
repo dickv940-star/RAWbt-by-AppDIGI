@@ -142,7 +142,17 @@ border-radius:10px;
 background:#1769c2;
 color:white;
 }
+  
+.deleteTool{
+    background:#d32f2f;
+    color:#fff;
+}
 
+.deleteTool.active{
+    background:#b71c1c;
+    transform:scale(1.1);
+}
+  
 .paper{
 width:360px;
 min-height:520px;
@@ -410,6 +420,10 @@ onclick="connectPrinter()">
 
 <div class="toolbar">
 
+<button class="tool deleteTool" id="trashBtn" title="Hapus">
+🗑
+</button>
+  
 <button class="tool" onclick="zoom(-.1)">
 −
 </button>
@@ -542,7 +556,8 @@ document.getElementById("preview");
 
 
 const fileInput = document.getElementById("file");
-
+const trashBtn = document.getElementById("trashBtn");
+  
 fileInput.addEventListener("change", function(e){
 
 let file = e.target.files[0];
