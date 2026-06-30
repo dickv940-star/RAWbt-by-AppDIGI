@@ -591,12 +591,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         // PDF
-        else if (file.type === "application/pdf") {
 
             const reader = new FileReader();
-
             reader.onload = function () {
-
                 const typedarray = new Uint8Array(this.result);
 
                 if (!window.pdfjsLib) {
@@ -604,11 +601,9 @@ window.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-              pdfjsLib.getDocument(typedarray).promise
-.then(pdf => {
-    console.log("PDF loaded halaman:", pdf.numPages);
+               pdfjsLib.getDocument(typedarray).promise.then(pdf => {
 
-                    pdf.getPage(1).then(page => {
+                pdf.getPage(1).then(page => {
 
                         const canvas = document.createElement("canvas");
                         const ctx = canvas.getContext("2d");
@@ -638,9 +633,8 @@ window.addEventListener("DOMContentLoaded", () => {
             reader.readAsArrayBuffer(file);
         }
 
-    });
-
 });
+  
 function zoom(v){
   saveState();
 
@@ -756,8 +750,6 @@ dragElement(t);
 
 }
 
-
-
 function cmd(c){
 
 document.execCommand(c);
@@ -857,15 +849,9 @@ deferred=e;
 
 
 function installApp(){
-
-
 if(deferred)
-
 deferred.prompt();
-
-
 else
-
 alert(
 "Gunakan Chrome Android untuk install"
 );
