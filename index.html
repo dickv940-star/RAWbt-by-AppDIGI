@@ -544,6 +544,10 @@ max="360">
 </div>
 
 <script>
+  
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  
 const paper = document.getElementById("paper");
 const preview = document.getElementById("preview");
 const drop = document.getElementById("drop");
@@ -577,69 +581,73 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log("FILE:", file.type);
 
         // IMAGE
-        if (file.type.startsWith("image/")) {
+       if (file.type.startsWith("image/")) {
 
-            const reader = new FileReader();
+    const reader = new FileReader();
 
-            reader.onload = (ev) => {
-                preview.src = ev.target.result;
-                preview.style.display = "block";
-                drop.style.display = "none";
-            };
+    reader.onload = (ev) => {
+        preview.src = ev.target.result;
+        preview.style.display = "block";
+        drop.style.display = "none";
+    };
 
-            reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+
+} 
+
+
+         
+
+else if (file.type === "application/pdf") {
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        const typedarray = new Uint8Array(this.result);
+
+        if (!window.pdfjsLib) {
+            alert("PDF.js belum aktif");
+            return;
         }
 
-        // PDF
+        pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+            pdf.getPage(1).then(page => {
 
-            const reader = new FileReader();
-            reader.onload = function () {
-                const typedarray = new Uint8Array(this.result);
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
 
-                if (!window.pdfjsLib) {
-                    alert("PDF.js belum aktif");
-                    return;
-                }
+                const viewport = page.getViewport({ scale: 2 });
 
-               pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
 
-                pdf.getPage(1).then(page => {
+                page.render({
+                    canvasContext: ctx,
+                    viewport: viewport
+                }).promise.then(() => {
 
-                        const canvas = document.createElement("canvas");
-                        const ctx = canvas.getContext("2d");
-
-                        const viewport = page.getViewport({ scale: 2 });
-
-                        canvas.width = viewport.width;
-                        canvas.height = viewport.height;
-
-                        page.render({
-                            canvasContext: ctx,
-                            viewport: viewport
-                        }).promise.then(() => {
-
-                            preview.src = canvas.toDataURL("image/png");
-                            preview.style.display = "block";
-                            drop.style.display = "none";
-
-                        });
-
-                    });
+                    preview.src = canvas.toDataURL("image/png");
+                    preview.style.display = "block";
+                    drop.style.display = "none";
 
                 });
 
-            };
+            });
+        });
 
-            reader.readAsArrayBuffer(file);
-        }
+    };
 
-});
+    reader.readAsArrayBuffer(file);
+}
+      
+}); // 
+  
+}); /  
   
 function zoom(v){
   saveState();
 
-  currentState.scale += v;
-
+  currentState.scale = Math.max(0.1, currentState.scale + v);
   applyTransform();
 }
 
@@ -647,13 +655,10 @@ function rotate(){
   saveState();
 
   currentState.rotate += 90;
-
   applyTransform();
 }
 
-
-
-function fit() {
+function fit(){
   saveState();
 
   currentState.x = 0;
@@ -756,7 +761,27 @@ document.execCommand(c);
 
 }
 
+function dragElement(el) {
+    let offsetX = 0, offsetY = 0, isDown = false;
 
+    el.addEventListener("pointerdown", (e) => {
+        isDown = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+    });
+
+    window.addEventListener("pointermove", (e) => {
+        if (!isDown) return;
+
+        el.style.left = (e.clientX - offsetX) + "px";
+        el.style.top = (e.clientY - offsetY) + "px";
+    });
+
+    window.addEventListener("pointerup", () => {
+        isDown = false;
+    });
+}
+      
 
 function fontSize(v){
 
@@ -777,57 +802,53 @@ let startX = 0;
 let startY = 0;
 
 paper.addEventListener("pointerdown", (e)=>{
-
+  
+    saveState();
+  
     drag = true;
 
     startX = e.clientX - currentState.x;
     startY = e.clientY - currentState.y;
 
     paper.setPointerCapture(e.pointerId);
-
 });
 
 paper.addEventListener("pointermove", (e)=>{
-
     if(!drag) return;
 
     currentState.x = e.clientX - startX;
     currentState.y = e.clientY - startY;
 
-    applyTransform();
-
+    applyPaperTransform();
 });
 
-paper.addEventListener("pointerup", ()=> drag = false);
-paper.addEventListener("pointercancel", ()=> drag = false);
-  
-function saveState() {
-  history.push({
-    x: currentState.x,
-    y: currentState.y,
-    scale: currentState.scale,
-    rotate: currentState.rotate
-  });
+paper.addEventListener("pointerup", ()=>{
+    drag = false;
+});
 
-  // opsional: batasi memory
-  if (history.length > 50) {
-    history.shift();
-  }
-}
+paper.addEventListener("pointercancel", ()=>{
+    drag = false;
+});
 
-function applyTransform() {
-  preview.style.transform =
-    `translate(${currentState.x}px, ${currentState.y}px)
-     scale(${currentState.scale})
-     rotate(${currentState.rotate}deg)`;
+function applyPaperTransform() {
+    paper.style.transform =
+        `translate(${currentState.x}px, ${currentState.y}px)
+         scale(${currentState.scale})
+         rotate(${currentState.rotate}deg)`;
 }
   
 function back() {
   if (history.length === 0) return;
 
-  currentState = history.pop();
+  const prev = history.pop();
+
+  currentState.x = prev.x;
+  currentState.y = prev.y;
+  currentState.scale = prev.scale;
+  currentState.rotate = prev.rotate;
+
   applyTransform();
-}  
+} 
   
 // INSTALL APP
 
