@@ -602,67 +602,60 @@ reader.readAsDataURL(file);
 
 
 // PDF
+else if(file.type === "application/pdf") {
 
-else if(file.type==="application/pdf"){
+    let reader = new FileReader();
 
+    reader.onload = function () {
 
-let reader=new FileReader();
+        let typedarray = new Uint8Array(this.result);
 
+        if (typeof pdfjsLib === "undefined") {
+            alert("PDF engine belum aktif");
+            return;
+        }
 
-reader.onload=function(){
+        pdfjsLib.getDocument(typedarray).promise
+        .then(function(pdf){
 
+            pdf.getPage(1).then(function(page){
 
-let typedarray =
-new Uint8Array(this.result);
+                let canvas = document.createElement("canvas");
+                let ctx = canvas.getContext("2d");
 
+                let viewport = page.getViewport({ scale: 2 });
 
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
 
-if(typeof pdfjsLib==="undefined"){
+                page.render({
+                    canvasContext: ctx,
+                    viewport: viewport
+                }).promise.then(function(){
 
-alert("PDF engine belum aktif");
+                    preview.src = canvas.toDataURL("image/png");
+                    preview.style.display = "block";
+                    drop.style.display = "none";
 
-return;
+                    if (typeof dragElement === "function") {
+                        dragElement(preview);
+                    }
 
-}
+                }).catch(err => {
+                    console.error("Render error:", err);
+                });
 
+            });
 
-pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
-
-    pdf.getPage(1).then(function(page){
-
-        let canvas = document.createElement("canvas");
-        let ctx = canvas.getContext("2d");
-
-        let viewport = page.getViewport({ scale: 2 });
-
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        page.render({
-            canvasContext: ctx,
-            viewport: viewport
-        }).promise.then(function(){
-
-            // hasil render
-            preview.src = canvas.toDataURL("image/png");
-            preview.style.display = "block";
-            drop.style.display = "none";
-
-            // SAFE DRAG (tidak crash kalau tidak ada fungsi)
-            if (typeof dragElement === "function") {
-                dragElement(preview);
-            }
-
-        }).catch(err=>{
-            console.error("Render error:", err);
+        }).catch(err => {
+            console.error("PDF load error:", err);
+            alert("PDF gagal dibuka");
         });
 
-    });
+    }; // ✅ TUTUP reader.onload
 
-}).catch(err=>{
-    console.error("PDF load error:", err);
-    alert("PDF gagal dibuka");
-});
+    reader.readAsArrayBuffer(file);
+}
   
 function zoom(v){
   saveState();
