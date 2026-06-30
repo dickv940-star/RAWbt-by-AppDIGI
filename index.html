@@ -486,7 +486,7 @@ by AppDIGI
 
 
 <button class="blue"
-onclick="connectBT()"
+onclick="connectPrinter()"
 
 🔵 Bluetooth
 
@@ -523,7 +523,7 @@ Ready
 
 
 <button class="blue"
-onclick="connectBT()">
+onclick="connectPrinter()"
 
 Connect Bluetooth
 
@@ -1036,66 +1036,27 @@ preview.style.transform=
 
 }
 
-
-
-// BLUETOOTH
-
-
-let device = null;
-let server = null;
-
-async function connectBluetooth() {
-    let s = document.getElementById("status");
-    s.innerHTML = "Connecting...";
-
-    try {
-        device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
-            optionalServices: [0xFFE0]
-        });
-
-        server = await device.gatt.connect();
-
-        s.innerHTML = "🟢 Bluetooth Connected Ready Print";
-    } catch (e) {
-        console.error(e);
-        s.innerHTML = "❌ Failed";
-    }
-}
-
-
-
 async function printNow(){
 
-if(!printerWrite){
+    if(!printerWrite){
 
-alert("Connect Bluetooth dulu");
+        alert("Connect Bluetooth dulu");
 
-return;
+        return;
 
-}
+    }
 
+    await sendPrinter(initESC());
 
-await sendPrinter(
-initESC()
-);
+    const img = imageToESC();
 
+    if(img instanceof Uint8Array){
 
-let img =
-imageToESC();
+        await sendPrinter(img);
 
+    }
 
-if(img){
-
-await sendPrinter(img);
-
-}
-
-
-await sendPrinter(
-cutPaper()
-);
-
+    await sendPrinter(cutPaper());
 
 }
 
