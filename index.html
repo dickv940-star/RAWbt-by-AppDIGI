@@ -278,7 +278,11 @@ border-radius:10px;
 white-space:nowrap;
 }
 
-
+body{
+    margin:0;
+    background:#eef4f8;
+    padding-bottom:90px;
+}
 /* MOBILE */
 
 
@@ -417,12 +421,12 @@ Ready
 
 
 <div class="workspace">
-
+  
 <input
 type="file"
 id="file"
 accept="image/*,.pdf"
-hidden>
+style="display:none;">
 
 <div class="toolbar">
 
@@ -448,7 +452,15 @@ Fit
 
 
 </div>
+<div style="margin-bottom:15px;text-align:center;">
 
+<button class="blue"
+onclick="openFile()"
+style="width:100%;height:55px;font-size:18px;">
+📂 Upload Gambar / PDF
+</button>
+
+</div>
 
 <div class="paper" id="paper">
 
@@ -523,7 +535,7 @@ max="360">
 
 <button onclick="back();">← Back</button>
 
-<button onclick="document.getElementById('file').click()">
+  <button onclick="openFile()">
 📂 Upload
 </button>
 
@@ -795,6 +807,13 @@ async function printNow(){
     await sendPrinter(cutPaper());
 
 }
+
+  function openFile(){
+    const input = document.getElementById("file");
+    input.value = "";
+    input.click();
+}
+  
 // EDIT
 
 
