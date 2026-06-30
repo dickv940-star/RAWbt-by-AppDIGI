@@ -544,16 +544,15 @@ max="360">
 </div>
 
 <script>
-  
 let history = [];
 let currentState = {
   x: 0,
   y: 0,
   scale: 1,
   rotate: 0
-};  
-  
-console.log("SCRIPT INDEX MULAI");
+};
+
+// ambil DOM SETELAH PAGE SIAP
 window.addEventListener("DOMContentLoaded", () => {
 
     const fileInput = document.getElementById("file");
@@ -572,6 +571,7 @@ window.addEventListener("DOMContentLoaded", () => {
         let file = e.target.files[0];
         if(!file) return;
 
+        // IMAGE
         if(file.type.startsWith("image/")){
 
             let reader = new FileReader();
