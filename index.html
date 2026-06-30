@@ -560,85 +560,81 @@ window.addEventListener("DOMContentLoaded", () => {
     const drop = document.getElementById("drop");
     const preview = document.getElementById("preview");
 
-    if(!fileInput || !drop || !preview){
-        console.error("DOM tidak ditemukan");
+    if (!fileInput || !drop || !preview) {
+        console.error("DOM belum siap");
         return;
     }
-fileInput.addEventListener("change", (e) => {
 
-    console.log("CHANGE EVENT JALAN");
+    fileInput.addEventListener("change", (e) => {
 
-    const file = e.target.files[0];
-    console.log("FILE:", file);
+        const file = e.target.files[0];
+        if (!file) return;
 
-    if (!file) return;
+        console.log("FILE:", file.type);
 
-    // ======================
-    // IMAGE
-    // ======================
-    if (file.type.startsWith("image/")) {
+        // IMAGE
+        if (file.type.startsWith("image/")) {
 
-        const reader = new FileReader();
+            const reader = new FileReader();
 
-        reader.onload = (ev) => {
-            preview.src = ev.target.result;
-            preview.style.display = "block";
-            drop.style.display = "none";
-        };
+            reader.onload = (ev) => {
+                preview.src = ev.target.result;
+                preview.style.display = "block";
+                drop.style.display = "none";
+            };
 
-        reader.readAsDataURL(file);
-    }
+            reader.readAsDataURL(file);
+        }
 
-    // ======================
-    // PDF
-    // ======================
-    else if (file.type === "application/pdf") {
+        // PDF
+        else if (file.type === "application/pdf") {
 
-        const reader = new FileReader();
+            const reader = new FileReader();
 
-        reader.onload = function () {
+            reader.onload = function () {
 
-            const typedarray = new Uint8Array(this.result);
+                const typedarray = new Uint8Array(this.result);
 
-            if (!window.pdfjsLib) {
-                alert("PDF.js belum aktif");
-                return;
-            }
+                if (!window.pdfjsLib) {
+                    alert("PDF.js belum aktif");
+                    return;
+                }
 
-            pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                pdfjsLib.getDocument(typedarray).promise.then(pdf => {
 
-                pdf.getPage(1).then(page => {
+                    pdf.getPage(1).then(page => {
 
-                    const canvas = document.createElement("canvas");
-                    const ctx = canvas.getContext("2d");
+                        const canvas = document.createElement("canvas");
+                        const ctx = canvas.getContext("2d");
 
-                    const viewport = page.getViewport({ scale: 2 });
+                        const viewport = page.getViewport({ scale: 2 });
 
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
 
-                    page.render({
-                        canvasContext: ctx,
-                        viewport: viewport
-                    }).promise.then(() => {
+                        page.render({
+                            canvasContext: ctx,
+                            viewport: viewport
+                        }).promise.then(() => {
 
-                        preview.src = canvas.toDataURL("image/png");
-                        preview.style.display = "block";
-                        drop.style.display = "none";
+                            preview.src = canvas.toDataURL("image/png");
+                            preview.style.display = "block";
+                            drop.style.display = "none";
+
+                        });
 
                     });
 
                 });
 
-            });
+            };
 
-        };
+            reader.readAsArrayBuffer(file);
+        }
 
-        reader.readAsArrayBuffer(file);
-    }
+    });
 
 });
-  
 function zoom(v){
   saveState();
 
