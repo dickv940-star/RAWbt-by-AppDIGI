@@ -554,91 +554,84 @@ let currentState = {
 };  
   
 console.log("SCRIPT INDEX MULAI");
-window.onerror = function(msg, url, line){
-    console.error("ERROR :", msg, "baris", line);
-};
-  
-const drop = document.getElementById("drop");
-const paper = document.getElementById("paper");
+window.addEventListener("DOMContentLoaded", function(){
 
-let preview =
-document.getElementById("preview");
+    const fileInput = document.getElementById("file");
+    const trashBtn = document.getElementById("trashBtn");
 
-
-const fileInput = document.getElementById("file");
-const trashBtn = document.getElementById("trashBtn");
-  
-fileInput.addEventListener("change", function(e){
-
-    let file = e.target.files[0];
-    if(!file) return;
-
-    // ======================
-    // IMAGE (JPG / PNG)
-    // ======================
-    if(file.type.startsWith("image/")){
-
-        let reader = new FileReader();
-
-        reader.onload = function(ev){
-            preview.src = ev.target.result;
-            preview.style.display = "block";
-            drop.style.display = "none";
-        };
-
-        reader.readAsDataURL(file);
+    if(!fileInput){
+        console.error("INPUT FILE TIDAK DITEMUKAN");
+        return;
     }
 
-    // ======================
-    // PDF
-    // ======================
-    else if(file.type === "application/pdf"){
+    fileInput.addEventListener("change", function(e){
 
-        let reader = new FileReader();
+        let file = e.target.files[0];
+        if(!file) return;
 
-        reader.onload = function () {
+        // IMAGE
+        if(file.type.startsWith("image/")){
 
-            let typedarray = new Uint8Array(this.result);
+            let reader = new FileReader();
 
-            if(typeof pdfjsLib === "undefined"){
-                alert("PDF engine belum aktif");
-                return;
-            }
+            reader.onload = function(ev){
+                preview.src = ev.target.result;
+                preview.style.display = "block";
+                drop.style.display = "none";
+            };
 
-            pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
+            reader.readAsDataURL(file);
+        }
 
-                pdf.getPage(1).then(function(page){
+        // PDF
+        else if(file.type === "application/pdf"){
 
-                    let canvas = document.createElement("canvas");
-                    let ctx = canvas.getContext("2d");
+            let reader = new FileReader();
 
-                    let viewport = page.getViewport({ scale: 2 });
+            reader.onload = function () {
 
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
+                let typedarray = new Uint8Array(this.result);
 
-                    page.render({
-                        canvasContext: ctx,
-                        viewport: viewport
-                    }).promise.then(function(){
+                if(typeof pdfjsLib === "undefined"){
+                    alert("PDF engine belum aktif");
+                    return;
+                }
 
-                        preview.src = canvas.toDataURL("image/png");
-                        preview.style.display = "block";
-                        drop.style.display = "none";
+                pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
+
+                    pdf.getPage(1).then(function(page){
+
+                        let canvas = document.createElement("canvas");
+                        let ctx = canvas.getContext("2d");
+
+                        let viewport = page.getViewport({ scale: 2 });
+
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+
+                        page.render({
+                            canvasContext: ctx,
+                            viewport: viewport
+                        }).promise.then(function(){
+
+                            preview.src = canvas.toDataURL("image/png");
+                            preview.style.display = "block";
+                            drop.style.display = "none";
+
+                        });
 
                     });
 
                 });
 
-            });
+            };
 
-        };
+            reader.readAsArrayBuffer(file);
+        }
 
-        reader.readAsArrayBuffer(file);
-    }
+    });
 
 });
-
 function zoom(v){
   saveState();
 
