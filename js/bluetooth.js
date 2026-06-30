@@ -1,21 +1,50 @@
+// ===============================
+// RAWbt by AppDIGI
+// Bluetooth Manager v2
+// ===============================
+
 let printerDevice = null;
 let printerServer = null;
 let printerService = null;
 let printerWrite = null;
 
-const SERVICE_UUID = "000018f0-0000-1000-8000-00805f9b34fb";
+const SERVICE_UUID =
+"000018f0-0000-1000-8000-00805f9b34fb";
 
-async function connectPrinter() {
+const FALLBACK_SERVICE = 0xFFE0;
 
-    const status = document.getElementById("status");
+// =======================================
+// CONNECT
+// =======================================
 
-    try {
+async function connectPrinter(){
 
-        status.innerHTML = "🔄 Connecting...";
+    const status =
+    document.getElementById("status");
 
-        printerDevice = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
-            optionalServices: [SERVICE_UUID]
+    if(!navigator.bluetooth){
+
+        alert("Browser tidak mendukung Web Bluetooth");
+
+        return;
+
+    }
+
+    try{
+
+        status.innerHTML =
+        "🔍 Scan Printer...";
+
+        printerDevice =
+        await navigator.bluetooth.requestDevice({
+
+            acceptAllDevices:true,
+
+            optionalServices:[
+                SERVICE_UUID,
+                FALLBACK_SERVICE
+            ]
+
         });
 
         printerDevice.addEventListener(
@@ -23,41 +52,86 @@ async function connectPrinter() {
             onDisconnected
         );
 
-        printerServer = await printerDevice.gatt.connect();
+        status.innerHTML =
+        "🔄 Connecting...";
 
-        printerService = await printerServer.getPrimaryService(SERVICE_UUID);
+        printerServer =
+        await printerDevice.gatt.connect();
 
-        const characteristics =
-            await printerService.getCharacteristics();
+        // coba UUID utama
+
+        try{
+
+            printerService =
+            await printerServer.getPrimaryService(
+                SERVICE_UUID
+            );
+
+        }catch{
+
+            printerService =
+            await printerServer.getPrimaryService(
+                FALLBACK_SERVICE
+            );
+
+        }
+
+        const chars =
+        await printerService.getCharacteristics();
 
         printerWrite = null;
 
-        console.log("=== Characteristic Printer ===");
+        console.log("===== CHARACTERISTIC =====");
 
-        for (const c of characteristics) {
+        for(const c of chars){
 
-            console.log(c.uuid, c.properties);
+            console.log(
+                c.uuid,
+                c.properties
+            );
 
-            if (
+            if(
                 c.properties.write ||
                 c.properties.writeWithoutResponse
-            ) {
+            ){
+
                 printerWrite = c;
+
                 break;
+
             }
 
         }
 
-        if (!printerWrite) {
-            status.innerHTML = "❌ Printer tidak mendukung Write";
-            alert("Printer terhubung tetapi channel print tidak ditemukan.");
+        if(!printerWrite){
+
+            status.innerHTML =
+            "❌ Printer tidak support Write";
+
+            alert(
+            "Printer ditemukan tetapi Characteristic Write tidak ada."
+            );
+
             return;
+
         }
 
-        status.innerHTML = "🟢 Bluetooth Connected Ready Print";
-        alert("Printer siap digunakan.");
+        console.log(
+            "Printer : ",
+            printerDevice.name
+        );
 
-    } catch (e) {
+        console.log(
+            "Characteristic : ",
+            printerWrite.uuid
+        );
+
+        status.innerHTML =
+        "🟢 Bluetooth Connected";
+
+    }
+
+    catch(e){
 
         console.error(e);
 
@@ -66,72 +140,180 @@ async function connectPrinter() {
         printerService = null;
         printerWrite = null;
 
-        status.innerHTML = "❌ Bluetooth gagal";
+        if(e.name=="NotFoundError"){
 
-        alert("Bluetooth gagal connect.");
+            status.innerHTML=
+            "⚪ Batal";
+
+            return;
+
+        }
+
+        status.innerHTML=
+        "❌ Bluetooth Error";
+
+        alert(e.message);
 
     }
 
 }
 
-function onDisconnected() {
+// =======================================
+// AUTO DISCONNECT
+// =======================================
+
+function onDisconnected(){
+
+    console.log(
+        "Printer Disconnect"
+    );
 
     printerServer = null;
     printerService = null;
     printerWrite = null;
 
-    document.getElementById("status").innerHTML =
-        "🔴 Printer Disconnect";
+    document.getElementById("status")
+    .innerHTML=
+    "🔴 Printer Disconnect";
 
 }
 
-async function sendPrinter(data) {
+// =======================================
+// SEND DATA
+// =======================================
 
-    if (
+async function sendPrinter(data){
+
+    if(
         !printerDevice ||
         !printerDevice.gatt.connected ||
         !printerWrite
-    ) {
+    ){
 
-        alert("Hubungkan printer dulu.");
+        alert("Hubungkan printer dahulu.");
 
         return;
 
     }
 
-    try {
+    if(!(data instanceof Uint8Array)){
 
-        await printerWrite.writeValue(data);
+        console.warn(
+        "Data bukan Uint8Array"
+        );
 
-        console.log("Data berhasil dikirim.");
+        return;
 
-    } catch (e) {
+    }
+
+    const chunkSize = 180;
+
+    try{
+
+        for(
+            let i=0;
+            i<data.length;
+            i+=chunkSize
+        ){
+
+            const chunk =
+            data.slice(
+                i,
+                i+chunkSize
+            );
+
+            if(
+                printerWrite.properties
+                .writeWithoutResponse
+            ){
+
+                await printerWrite
+                .writeValueWithoutResponse(
+                    chunk
+                );
+
+            }
+
+            else{
+
+                await printerWrite
+                .writeValueWithResponse(
+                    chunk
+                );
+
+            }
+
+            await new Promise(r=>
+                setTimeout(r,8)
+            );
+
+        }
+
+        console.log(
+            "Print Success"
+        );
+
+    }
+
+    catch(e){
 
         console.error(e);
 
-        alert("Print gagal.");
+        alert(
+        "Print gagal.\n"+e.message
+        );
 
     }
 
 }
 
-async function disconnectPrinter() {
+// =======================================
+// DISCONNECT
+// =======================================
 
-    if (
-        printerDevice &&
-        printerDevice.gatt.connected
-    ) {
+function disconnectPrinter(){
 
-        printerDevice.gatt.disconnect();
+    try{
+
+        if(
+            printerDevice &&
+            printerDevice.gatt.connected
+        ){
+
+            printerDevice.removeEventListener(
+                "gattserverdisconnected",
+                onDisconnected
+            );
+
+            printerDevice.gatt.disconnect();
+
+        }
 
     }
 
+    catch(e){
+
+        console.log(e);
+
+    }
+
+    printerDevice = null;
     printerServer = null;
     printerService = null;
     printerWrite = null;
 
-    document.getElementById("status").innerHTML =
-        "⚪ Bluetooth Disconnect";
+    document.getElementById("status")
+    .innerHTML=
+    "⚪ Disconnect";
 
 }
 
+// =======================================
+// COMPATIBILITY
+// =======================================
+
+function connectBT(){
+
+    connectPrinter();
+
+}
