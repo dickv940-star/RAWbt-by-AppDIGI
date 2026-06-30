@@ -640,9 +640,9 @@ else if (file.type === "application/pdf") {
     reader.readAsArrayBuffer(file);
 }
       
-}); // 
+}); 
   
-}); /  
+}); 
   
 function zoom(v){
   saveState();
@@ -819,7 +819,7 @@ paper.addEventListener("pointermove", (e)=>{
     currentState.x = e.clientX - startX;
     currentState.y = e.clientY - startY;
 
-    applyPaperTransform();
+    applyTransform()
 });
 
 paper.addEventListener("pointerup", ()=>{
@@ -830,7 +830,7 @@ paper.addEventListener("pointercancel", ()=>{
     drag = false;
 });
 
-function applyPaperTransform() {
+function applyTransform() {
     paper.style.transform =
         `translate(${currentState.x}px, ${currentState.y}px)
          scale(${currentState.scale})
