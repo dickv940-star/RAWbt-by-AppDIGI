@@ -553,6 +553,14 @@ max="360">
 
 <script>
   
+let history = [];
+let currentState = {
+  x: 0,
+  y: 0,
+  scale: 1,
+  rotate: 0
+};  
+  
 console.log("SCRIPT INDEX MULAI");
 window.onerror = function(msg, url, line){
     console.error("ERROR :", msg, "baris", line);
@@ -560,10 +568,6 @@ window.onerror = function(msg, url, line){
   
 const drop = document.getElementById("drop");
 const paper = document.getElementById("paper");
-
-let scale=1;
-let angle=0;
-
 
 let preview =
 document.getElementById("preview");
@@ -604,9 +608,6 @@ reader.readAsDataURL(file);
 
 
 }
-
-
-
 
 
 // PDF
@@ -722,58 +723,51 @@ alert("Format tidak didukung");
 
 });
 function zoom(v){
+  saveState();
 
-scale+=v;
+  currentState.scale += v;
 
-
-preview.style.transform=
-`scale(${scale}) rotate(${angle}deg)`;
-
+  applyTransform();
 }
-
-
-
 
 function rotate(){
+  saveState();
 
-angle+=90;
+  currentState.rotate += 90;
 
-
-preview.style.transform=
-`scale(${scale}) rotate(${angle}deg)`;
-
+  applyTransform();
 }
 
 
 
-function fit(){
+function fit() {
+  saveState();
 
-scale=1;
-angle=0;
+  currentState.x = 0;
+  currentState.y = 0;
+  currentState.scale = 1;
+  currentState.rotate = 0;
 
-
-preview.style.transform="";
-
-
+  applyTransform();
 }
-
+  
 const zoomRange = document.getElementById("zoomRange");
 const rotateRange = document.getElementById("rotateRange");
 
 if (zoomRange) {
     zoomRange.oninput = function () {
-        scale = this.value / 100;
-        preview.style.transform =
-            `scale(${scale}) rotate(${angle}deg)`;
-    };
+  currentState.scale = this.value / 100;
+  applyTransform();
+};
+  
 }
 
 if (rotateRange) {
-    rotateRange.oninput = function () {
-        angle = this.value;
-        preview.style.transform =
-            `scale(${scale}) rotate(${angle}deg)`;
-    };
+   rotateRange.oninput = function () {
+  currentState.rotate = this.value;
+  applyTransform();
+};
+  
 }
   
 async function printNow(){
@@ -822,36 +816,19 @@ e.style.display=="block"
 
 }
 
-
-
-
-
 function addText(){
 
 
 let t =
 document.createElement("div");
-
-
 t.className="text move";
-
-
 t.contentEditable=true;
-
-
 t.innerHTML="Text Baru";
-
-
 paper.appendChild(t);
-
-
 dragElement(t);
 
 
 }
-
-
-
 
 
 
@@ -860,8 +837,6 @@ function cmd(c){
 document.execCommand(c);
 
 }
-
-
 
 
 
@@ -878,56 +853,38 @@ false,
 
 
 
-
-
-
-
 // DRAG
 
 
-function dragElement(el){
+function dragElement(el) {
+  let offsetX = 0;
+  let offsetY = 0;
 
+ el.onmousedown = function (e) {
 
-let x,y;
+  offsetX = e.clientX - currentState.x;
+  offsetY = e.clientY - currentState.y;
 
+  document.onmousemove = function (e) {
 
-el.onmousedown=function(e){
+    currentState.x = e.clientX - offsetX;
+    currentState.y = e.clientY - offsetY;
 
+    applyTransform();
+  };
 
-x=e.clientX-el.offsetLeft;
-
-y=e.clientY-el.offsetTop;
-
-
-document.onmousemove=function(e){
-
-
-el.style.left=
-e.clientX-x+"px";
-
-
-el.style.top=
-e.clientY-y+"px";
-
-
+  document.onmouseup = function () {
+    saveState(); // ✔ simpan setelah drag selesai
+    document.onmousemove = null;
+  };
+};
+    
+    document.onmouseup = function () {
+      document.onmousemove = null;
+      document.onmouseup = null;
+    };
+  };
 }
-
-
-
-document.onmouseup=function(){
-
-document.onmousemove=null;
-
-}
-
-
-}
-
-
-}
-
-
-
 
 
 document.querySelectorAll(".move")
@@ -935,10 +892,34 @@ document.querySelectorAll(".move")
 
 
 
+function saveState() {
+  history.push({
+    x: currentState.x,
+    y: currentState.y,
+    scale: currentState.scale,
+    rotate: currentState.rotate
+  });
 
+  // opsional: batasi memory
+  if (history.length > 50) {
+    history.shift();
+  }
+}
 
+function applyTransform() {
+  preview.style.transform =
+    `translate(${currentState.x}px, ${currentState.y}px)
+     scale(${currentState.scale})
+     rotate(${currentState.rotate}deg)`;
+}
+  
+function back() {
+  if (history.length === 0) return;
 
-
+  currentState = history.pop();
+  applyTransform();
+}  
+  
 // INSTALL APP
 
 
@@ -956,9 +937,6 @@ deferred=e;
 
 
 });
-
-
-
 
 
 function installApp(){
