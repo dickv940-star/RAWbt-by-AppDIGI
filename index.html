@@ -574,7 +574,8 @@ let file = e.target.files[0];
 
 if(!file) return;
 
-
+});
+  
 // GAMBAR JPG PNG
 
 if(file.type.startsWith("image/")){
@@ -598,7 +599,6 @@ reader.readAsDataURL(file);
 
 
 }
-
 
 // PDF
 else if(file.type === "application/pdf") {
