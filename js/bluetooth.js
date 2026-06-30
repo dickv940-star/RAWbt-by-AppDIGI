@@ -211,7 +211,7 @@ async function sendPrinter(data){
 
     }
 
-    const chunkSize = 180;
+    const chunkSize = 128;
 
     try{
 
@@ -249,7 +249,7 @@ async function sendPrinter(data){
             }
 
             await new Promise(r=>
-                setTimeout(r,8)
+                setTimeout(r,20)
             );
 
         }
