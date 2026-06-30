@@ -670,10 +670,7 @@ async function printNow(){
  function openFile(){
     const input = document.getElementById("file");
     input.value = "";
-
-    setTimeout(()=>{
-        input.click();
-    }, 50);
+    input.click(); // TANPA setTimeout
 }
   
 // EDIT
