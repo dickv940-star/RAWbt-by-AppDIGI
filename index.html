@@ -32,15 +32,13 @@ background:#eef4f8;
 
 header{
 
-height:60px;
+height:52px;
 background:#1769c2;
 color:white;
-
 display:flex;
 justify-content:space-between;
 align-items:center;
-
-padding:10px 15px;
+padding:8px 12px;
 
 }
 
@@ -51,7 +49,6 @@ margin:0;
 
 
 .top button{
-
 margin-left:5px;
 
 }
@@ -133,26 +130,34 @@ position:relative;
 
 
 .toolbar{
+position:absolute;
+top:10px;
+left:50%;
+transform:translateX(-50%);
 display:flex;
 gap:8px;
-position:static;
-background:transparent;
-box-shadow:none;
-padding:0;
+background:#fff;
+padding:8px 12px;
+border-radius:30px;
+box-shadow:0 3px 12px rgba(0,0,0,.15);
+z-index:20;
 
 }
 
-
 .tool{
-background:#1769c2;
-color:white;
-padding:12px;
-border-radius:8px;
+width:42px;
+height:42px;
+padding:0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:18px;
 
 }
 
 
 .paper{
+margin-top:70px;
 width:360px;
 min-height:520px;
 background:white;
@@ -162,8 +167,6 @@ overflow:hidden;
 box-shadow:0 0 20px #777;
 
 }
-
-
 
 .drop{
 height:230px;
@@ -228,22 +231,16 @@ padding:8px;
 
 
 
-
-
 /* EDIT */
 
 .editbar{
 display:none;
 position:fixed;
-left:0;
-right:0;
-bottom:65px;
-background:#fff;
-padding:15px;
-box-shadow:0 -4px 12px rgba(0,0,0,.2);
-z-index:9998;
+left:10px;
+right:10px;
+bottom:82px;
+border-radius:15px;
 }
-
 
 
 
@@ -254,20 +251,25 @@ position:fixed;
 bottom:0;
 left:0;
 right:0;
-height:65px;
+display:grid;  
+grid-template-columns:repeat(4,1fr);
+height:72px;
 background:#fff;
 display:flex;
 align-items:center;
 justify-content:space-around;
-padding:8px;
-gap:6px;
+padding:10px;
+gap:10px;
 box-shadow:0 -3px 10px #0002;
 z-index:9999;
 }
 
 .footer button{
 flex:1;
-max-width:110px;
+height:52px;
+font-weight:bold;
+font-size:15px;
+max-width:none;
 padding:10px 5px;
 font-size:14px;
 background:#1769c2;
@@ -289,17 +291,8 @@ display:block;
 
 }
 
-
-.side,.settings{
-
-display:none;
-
-}
-
-
 .workspace{
-
-height:calc(100vh - 115px);
+min-height:calc(100vh - 140px);
 
 }
 
@@ -345,6 +338,24 @@ height:650px;
 margin-bottom:80px;
 
 }
+ .logo{
+
+display:flex;
+flex-direction:column;
+
+}
+
+.appname{
+font-size:22px;
+font-weight:bold;
+
+}
+
+.brand{
+font-size:12px;
+opacity:.8;
+
+} 
   
 }
 
@@ -395,35 +406,14 @@ by AppDIGI
 <span class="status" id="status">
 Ready
 </span>
-
+  
 
 </div>
-
 
 </header>
 
 
-
-
-
-
-
 <div class="container">
-
-
-
-<div class="side">
-
-
-
-<div class="card">
-
-<h3>Printer</h3>
-
-
-<button class="blue" onclick="connectPrinter()">
-Connect Bluetooth
-</button>
 
 
 <div class="workspace">
@@ -496,128 +486,37 @@ RAWbt by AppDIGI
 
 <div class="editbar" id="editbar">
 
-
-<button onclick="addText()">
-
-➕
-
-</button>
-
-
-<button onclick="cmd('bold')">
-
-<b>B</b>
-
-</button>
-
-
-<button onclick="cmd('italic')">
-
-<i>I</i>
-
-</button>
-
-
-<button onclick="cmd('underline')">
-
-<u>U</u>
-
-</button>
-
+<button onclick="addText()">➕</button>
+<button onclick="cmd('bold')"><b>B</b></button>
+<button onclick="cmd('italic')"><i>I</i></button>
+<button onclick="cmd('underline')"><u>U</u></button>
 
 <select onchange="fontSize(this.value)">
-
-<option value="16">
-16
-</option>
-
-
-<option value="24">
-24
-</option>
-
-
-<option value="32">
-32
-</option>
-
+<option value="16">16</option>
+<option value="24">24</option>
+<option value="32">32</option>
 </select>
-  
+
 <select id="paperSize">
-
-
-<option value="80">
-80 mm
-</option>
-
-
-<option value="58">
-58 mm
-</option>
-
-
+<option value="80">80 mm</option>
+<option value="58">58 mm</option>
 </select>
 
-
-</div>
-
-
-
-</div>
-
-
-<div class="settings">
-
-
-<h2>
-
-Print Settings
-
-</h2>
-
-
-<select>
-
-<option>
-80 mm
-</option>
-
-
-<option>
-58 mm
-</option>
-
-
-</select>
-
-
-
-<br><br>
-
-
-<input type="range"
+<input
+type="range"
 id="zoomRange"
 min="50"
 max="150"
 value="100">
 
-
-<br><br>
-
-
-<input type="range"
+<input
+type="range"
 id="rotateRange"
 min="0"
 max="360">
 
-
 </div>
-
-
-
-</div>
-
-
+  
 
 <div class="footer">
 
