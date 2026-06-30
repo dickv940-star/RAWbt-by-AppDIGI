@@ -718,7 +718,14 @@ async function printNow(){
     await sendPrinter(cutPaper());
 
 }
-
+function saveState() {
+    history.push({
+        x: currentState.x,
+        y: currentState.y,
+        scale: currentState.scale,
+        rotate: currentState.rotate
+    });
+}
  function openFile(){
     const input = document.getElementById("file");
     input.value = "";
