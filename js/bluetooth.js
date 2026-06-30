@@ -128,7 +128,9 @@ async function connectPrinter(){
 
         status.innerHTML =
         "🟢 Bluetooth Connected";
-
+console.log("CONNECTED");
+console.log(printerDevice);
+console.log(printerWrite);
     }
 
     catch(e){
