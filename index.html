@@ -1008,6 +1008,12 @@ if (rotateRange) {
   
 async function printNow(){
 
+    console.log("===== PRINT =====");
+    console.log("printerDevice =", printerDevice);
+    console.log("printerServer =", printerServer);
+    console.log("printerService =", printerService);
+    console.log("printerWrite =", printerWrite);
+
     if(!printerWrite){
 
         alert("Connect Bluetooth dulu");
@@ -1029,7 +1035,6 @@ async function printNow(){
     await sendPrinter(cutPaper());
 
 }
-
 // EDIT
 
 
