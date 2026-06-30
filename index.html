@@ -554,27 +554,29 @@ let currentState = {
 };  
   
 console.log("SCRIPT INDEX MULAI");
-window.addEventListener("DOMContentLoaded", function(){
+window.addEventListener("DOMContentLoaded", () => {
 
     const fileInput = document.getElementById("file");
-    const trashBtn = document.getElementById("trashBtn");
+    const drop = document.getElementById("drop");
+    const preview = document.getElementById("preview");
 
-    if(!fileInput){
-        console.error("INPUT FILE TIDAK DITEMUKAN");
+    if(!fileInput || !preview || !drop){
+        console.error("DOM belum lengkap");
         return;
     }
 
-    fileInput.addEventListener("change", function(e){
+    fileInput.addEventListener("change", (e) => {
+
+        console.log("FILE DIPILIH");
 
         let file = e.target.files[0];
         if(!file) return;
 
-        // IMAGE
         if(file.type.startsWith("image/")){
 
             let reader = new FileReader();
 
-            reader.onload = function(ev){
+            reader.onload = (ev) => {
                 preview.src = ev.target.result;
                 preview.style.display = "block";
                 drop.style.display = "none";
@@ -583,55 +585,10 @@ window.addEventListener("DOMContentLoaded", function(){
             reader.readAsDataURL(file);
         }
 
-        // PDF
-        else if(file.type === "application/pdf"){
-
-            let reader = new FileReader();
-
-            reader.onload = function () {
-
-                let typedarray = new Uint8Array(this.result);
-
-                if(typeof pdfjsLib === "undefined"){
-                    alert("PDF engine belum aktif");
-                    return;
-                }
-
-                pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
-
-                    pdf.getPage(1).then(function(page){
-
-                        let canvas = document.createElement("canvas");
-                        let ctx = canvas.getContext("2d");
-
-                        let viewport = page.getViewport({ scale: 2 });
-
-                        canvas.width = viewport.width;
-                        canvas.height = viewport.height;
-
-                        page.render({
-                            canvasContext: ctx,
-                            viewport: viewport
-                        }).promise.then(function(){
-
-                            preview.src = canvas.toDataURL("image/png");
-                            preview.style.display = "block";
-                            drop.style.display = "none";
-
-                        });
-
-                    });
-
-                });
-
-            };
-
-            reader.readAsArrayBuffer(file);
-        }
-
     });
 
 });
+  
 function zoom(v){
   saveState();
 
