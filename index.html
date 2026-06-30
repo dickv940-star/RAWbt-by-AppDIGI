@@ -177,17 +177,21 @@ color:#777;
 }
 
 .move{
-position:absolute;
-cursor:move;
-user-select:none;
-
+  overflow:auto;
+  cursor:grab;
+  touch-action:none;
 }
 
+.move:active{
+  cursor:grabbing;
+  
+}
+  
 #preview{
-max-width:80%;
-top:40px;
-left:35px;
-
+    position:absolute;
+    max-width:80%;
+    top:40px;
+    left:35px;
 }
 
 .text{
@@ -195,7 +199,7 @@ top:300px;
 left:50px;
 min-width:120px;
 outline:none;
-
+position:absolute;
 }
 
 .watermark{
@@ -848,39 +852,52 @@ false,
 }
 
 
-
 // DRAG
 
+function dragElement(el){
 
-function dragElement(el) {
-  let offsetX, offsetY;
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
 
-  el.onmousedown = function (e) {
+    el.style.touchAction = "none";
 
-    saveState();
+    el.addEventListener("pointerdown", function(e){
 
-    offsetX = e.clientX - currentState.x;
-    offsetY = e.clientY - currentState.y;
+        dragging = true;
 
-    document.onmousemove = function (e) {
+        startX = e.clientX;
+        startY = e.clientY;
 
-      currentState.x = e.clientX - offsetX;
-      currentState.y = e.clientY - offsetY;
+        el.setPointerCapture(e.pointerId);
 
-      applyTransform();
-    };
+    });
 
-    document.onmouseup = function () {
-      document.onmousemove = null;
-    };
-  };
+    el.addEventListener("pointermove", function(e){
+
+        if(!dragging) return;
+
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+
+        startX = e.clientX;
+        startY = e.clientY;
+
+        currentState.x += dx;
+        currentState.y += dy;
+
+        applyTransform();
+
+    });
+
+    function stopDrag(){
+        dragging = false;
+    }
+
+    el.addEventListener("pointerup", stopDrag);
+    el.addEventListener("pointercancel", stopDrag);
+
 }
-
-
-document.querySelectorAll(".move")
-.forEach(x=>dragElement(x));
-
-
 
 function saveState() {
   history.push({
