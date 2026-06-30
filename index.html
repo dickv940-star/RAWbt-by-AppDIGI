@@ -592,8 +592,6 @@ preview.style.display="block";
 
 drop.style.display="none";
 
-Element(preview);
-
 };
 
 
@@ -628,93 +626,44 @@ return;
 }
 
 
-pdfjsLib.getDocument(
-typedarray
-).promise.then(function(pdf){
+pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
 
+    pdf.getPage(1).then(function(page){
 
+        let canvas = document.createElement("canvas");
+        let ctx = canvas.getContext("2d");
 
-pdf.getPage(1).then(function(page){
+        let viewport = page.getViewport({ scale: 2 });
 
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
 
-let canvas =
-document.createElement("canvas");
+        page.render({
+            canvasContext: ctx,
+            viewport: viewport
+        }).promise.then(function(){
 
+            // hasil render
+            preview.src = canvas.toDataURL("image/png");
+            preview.style.display = "block";
+            drop.style.display = "none";
 
-let ctx =
-canvas.getContext("2d");
+            // SAFE DRAG (tidak crash kalau tidak ada fungsi)
+            if (typeof dragElement === "function") {
+                dragElement(preview);
+            }
 
+        }).catch(err=>{
+            console.error("Render error:", err);
+        });
 
+    });
 
-let viewport =
-page.getViewport({
-scale:2
+}).catch(err=>{
+    console.error("PDF load error:", err);
+    alert("PDF gagal dibuka");
 });
-
-
-
-canvas.width =
-viewport.width;
-
-
-canvas.height =
-viewport.height;
-
-
-
-page.render({
-
-canvasContext:ctx,
-
-viewport:viewport
-
-
-}).promise.then(function(){
-
-
-preview.src =
-canvas.toDataURL("image/png");
-
-
-
-preview.style.display="block";
-
-
-drop.style.display="none";
-
-
-dragElement(preview);
-
-
-
-});
-
-
-});
-
-
-});
-
-
-}
-
-
-reader.readAsArrayBuffer(file);
-
-
-}
-
-
-else{
-
-
-alert("Format tidak didukung");
-
-
-}
-
-
-});
+  
 function zoom(v){
   saveState();
 
@@ -793,10 +742,13 @@ async function printNow(){
 
 }
 
-  function openFile(){
+ function openFile(){
     const input = document.getElementById("file");
     input.value = "";
-    input.click();
+
+    setTimeout(()=>{
+        input.click();
+    }, 50);
 }
   
 // EDIT
