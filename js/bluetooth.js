@@ -127,11 +127,13 @@ async function connectPrinter(){
             printerWrite.uuid
         );
 
-        status.innerHTML =
-        "🟢 Bluetooth Connected";
-console.log("CONNECTED");
-console.log(printerDevice);
-console.log(printerWrite);
+       status.innerHTML = "🟢 Bluetooth Connected";
+
+console.log("===== CONNECT SUCCESS =====");
+console.log("Device :", printerDevice);
+console.log("Server :", printerServer);
+console.log("Service :", printerService);
+console.log("Write :", printerWrite);
     }
 
     catch(e){
