@@ -613,8 +613,6 @@ Tulis text
 </div>
 
 
-
-
 <div class="watermark">
 
 RAWbt by AppDIGI
@@ -623,11 +621,6 @@ RAWbt by AppDIGI
 
 
 </div>
-
-
-
-
-
 
 
 <div class="editbar" id="editbar">
@@ -699,16 +692,7 @@ RAWbt by AppDIGI
 
 
 
-
-
-
-
 </div>
-
-
-
-
-
 
 
 <div class="settings">
@@ -764,9 +748,6 @@ max="360">
 
 
 
-
-
-
 <div class="footer">
 
 
@@ -800,14 +781,10 @@ max="360">
 
 
 
-
-
-
-
-
-
 <script>
-
+  
+const drop = document.getElementById("drop");
+const paper = document.getElementById("paper");
 
 let scale=1;
 let angle=0;
@@ -1005,31 +982,25 @@ preview.style.transform="";
 
 }
 
+const zoomRange = document.getElementById("zoomRange");
+const rotateRange = document.getElementById("rotateRange");
 
-
-zoomRange.oninput=function(){
-
-scale=this.value/100;
-
-
-preview.style.transform=
-`scale(${scale}) rotate(${angle}deg)`;
-
-
+if (zoomRange) {
+    zoomRange.oninput = function () {
+        scale = this.value / 100;
+        preview.style.transform =
+            `scale(${scale}) rotate(${angle}deg)`;
+    };
 }
 
-
-rotateRange.oninput=function(){
-
-angle=this.value;
-
-
-preview.style.transform=
-`scale(${scale}) rotate(${angle}deg)`;
-
-
+if (rotateRange) {
+    rotateRange.oninput = function () {
+        angle = this.value;
+        preview.style.transform =
+            `scale(${scale}) rotate(${angle}deg)`;
+    };
 }
-
+  
 async function printNow(){
 
     if(!printerWrite){
