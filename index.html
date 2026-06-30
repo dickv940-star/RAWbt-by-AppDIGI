@@ -614,8 +614,7 @@ else if(file.type === "application/pdf") {
             return;
         }
 
-        pdfjsLib.getDocument(typedarray).promise
-        .then(function(pdf){
+        pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
 
             pdf.getPage(1).then(function(page){
 
@@ -636,27 +635,16 @@ else if(file.type === "application/pdf") {
                     preview.style.display = "block";
                     drop.style.display = "none";
 
-                    if (typeof dragElement === "function") {
-                        dragElement(preview);
-                    }
-
-                }).catch(err => {
-                    console.error("Render error:", err);
                 });
 
             });
 
-        }).catch(err => {
-            console.error("PDF load error:", err);
-            alert("PDF gagal dibuka");
         });
 
-    }; // ✅ TUTUP reader.onload
+    };
 
     reader.readAsArrayBuffer(file);
 }
-  
- });
   
 function zoom(v){
   saveState();
@@ -799,8 +787,6 @@ false,
 
 
 // DRAG
-
-const paper = document.getElementById("paper");
 
 let drag = false;
 let startX = 0;
