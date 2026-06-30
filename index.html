@@ -544,6 +544,10 @@ max="360">
 </div>
 
 <script>
+const paper = document.getElementById("paper");
+const preview = document.getElementById("preview");
+const drop = document.getElementById("drop");
+  
 let history = [];
 let currentState = {
   x: 0,
@@ -600,7 +604,9 @@ window.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+              pdfjsLib.getDocument(typedarray).promise
+.then(pdf => {
+    console.log("PDF loaded halaman:", pdf.numPages);
 
                     pdf.getPage(1).then(page => {
 
@@ -885,36 +891,22 @@ console.log("connectPrinter =", typeof connectPrinter);
 <script src="js/thermal.js"></script>
 
 <script>
+if ("serviceWorker" in navigator) {
 
-if("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
 
-window.addEventListener(
-"load",
-()=>{
+        navigator.serviceWorker.register("service-worker.js")
+            .then(() => {
+                console.log("RAWbt PWA aktif");
+            })
+            .catch(err => {
+                console.log("SW error:", err);
+            });
 
-navigator.serviceWorker.register(
-"service-worker.js"
-)
-.then(()=>{
-
-console.log(
-"RAWbt PWA aktif"
-);
-
-})
-.catch(err=>{
-
-console.log(err);
-
-});
-
-
-});
+    });
 
 }
-
 </script>
-
 
 </body>
 </html>
