@@ -521,11 +521,7 @@ max="360">
 <div class="footer">
 
 
-<button onclick="goBack();">
-
-← Back
-
-</button>
+<button onclick="back();">← Back</button>
 
 <button onclick="document.getElementById('file').click()">
 📂 Upload
@@ -857,31 +853,25 @@ false,
 
 
 function dragElement(el) {
-  let offsetX = 0;
-  let offsetY = 0;
+  let offsetX, offsetY;
 
- el.onmousedown = function (e) {
+  el.onmousedown = function (e) {
 
-  offsetX = e.clientX - currentState.x;
-  offsetY = e.clientY - currentState.y;
+    saveState();
 
-  document.onmousemove = function (e) {
+    offsetX = e.clientX - currentState.x;
+    offsetY = e.clientY - currentState.y;
 
-    currentState.x = e.clientX - offsetX;
-    currentState.y = e.clientY - offsetY;
+    document.onmousemove = function (e) {
 
-    applyTransform();
-  };
+      currentState.x = e.clientX - offsetX;
+      currentState.y = e.clientY - offsetY;
 
-  document.onmouseup = function () {
-    saveState(); // ✔ simpan setelah drag selesai
-    document.onmousemove = null;
-  };
-};
-    
+      applyTransform();
+    };
+
     document.onmouseup = function () {
       document.onmousemove = null;
-      document.onmouseup = null;
     };
   };
 }
