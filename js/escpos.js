@@ -1,244 +1,175 @@
-function initESC(){
+/*
+====================================================
+ RAWbt AppDIGI
+ escpos.js v2.0
+ ESC/POS Command Library
+====================================================
+*/
 
-return new Uint8Array([
-0x1B,
-0x40
-]);
+"use strict";
 
-}
+/* ---------- Printer Init ---------- */
 
+function initESC() {
 
-
-function cutPaper(){
-
-return new Uint8Array([
-0x1D,
-0x56,
-0x00
-]);
-
-}
-
-
-
-function printText(text){
-
-let encoder =
-new TextEncoder();
-
-
-return encoder.encode(
-text+"\n\n"
-);
+    return new Uint8Array([
+        0x1B, 0x40,       // Initialize
+        0x1B, 0x61, 0x01  // Align Center
+    ]);
 
 }
 
+/* ---------- Alignment ---------- */
 
+function alignLeft() {
 
-// PRINT GAMBAR THERMAL
-
-function imageToESC(){
-
-
-let img =
-document.getElementById("preview");
-
-
-if(!img || !img.src){
-
-alert("Belum ada gambar");
-
-return null;
+    return new Uint8Array([
+        0x1B, 0x61, 0x00
+    ]);
 
 }
 
+function alignCenter() {
 
-
-let canvas =
-document.createElement("canvas");
-
-
-let ctx =
-canvas.getContext("2d");
-
-
-
-let size =
-document.getElementById("paperSize");
-
-
-let width=576;
-
-
-if(size && size.value=="58"){
-
-width=384;
+    return new Uint8Array([
+        0x1B, 0x61, 0x01
+    ]);
 
 }
 
+function alignRight() {
 
-
-canvas.width=width;
-
-
-canvas.height =
-img.naturalHeight *
-(width / img.naturalWidth);
-
-
-
-ctx.drawImage(
-img,
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-
-
-let image =
-ctx.getImageData(
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-
-
-return convertBitmap(image);
+    return new Uint8Array([
+        0x1B, 0x61, 0x02
+    ]);
 
 }
 
+/* ---------- Feed ---------- */
 
+function feed(lines = 3) {
 
-
-
-function convertBitmap(img){
-
-
-let width =
-img.width;
-
-
-let height =
-img.height;
-
-
-
-let bytes=[];
-
-
-
-for(let y=0;y<height;y+=8){
-
-
-
-for(let x=0;x<width;x+=8){
-
-
-
-let byte=0;
-
-
-
-for(let yy=0;yy<8;yy++){
-
-
-
-for(let xx=0;xx<8;xx++){
-
-
-
-let pos =
-((y+yy)*width+(x+xx))*4;
-
-
-
-let gray =
-0;
-
-
-
-if(pos < img.data.length){
-
-
-gray =
-img.data[pos]+
-img.data[pos+1]+
-img.data[pos+2];
-
+    return new Uint8Array([
+        0x1B,
+        0x64,
+        lines
+    ]);
 
 }
 
+/* ---------- Cut ---------- */
 
+function cutPaper() {
 
-if(gray < 400){
-
-
-byte |=
-(1 << (7-xx));
-
-
-}
-
-
+    return new Uint8Array([
+        0x1D,
+        0x56,
+        0x00
+    ]);
 
 }
 
+/* ---------- Text ---------- */
 
+function printText(text = "") {
 
-}
+    const encoder = new TextEncoder();
 
-
-
-bytes.push(byte);
-
-
+    return encoder.encode(text + "\n");
 
 }
 
+/* ---------- Bold ---------- */
 
+function bold(on = true) {
 
-}
-
-
-
-let header =
-new Uint8Array([
-0x1D,
-0x76,
-0x30,
-0x00
-]);
-
-
-
-let result =
-new Uint8Array(
-header.length + bytes.length
-);
-
-
-
-for(let i=0;i<header.length;i++){
-
-result[i]=header[i];
+    return new Uint8Array([
+        0x1B,
+        0x45,
+        on ? 1 : 0
+    ]);
 
 }
 
+/* ---------- Underline ---------- */
 
+function underline(on = true) {
 
-for(let i=0;i<bytes.length;i++){
-
-result[i+header.length]=bytes[i];
+    return new Uint8Array([
+        0x1B,
+        0x2D,
+        on ? 1 : 0
+    ]);
 
 }
 
+/* ---------- Double Size ---------- */
 
+function textDouble(on = true) {
 
-return result;
+    return new Uint8Array([
+        0x1D,
+        0x21,
+        on ? 0x11 : 0x00
+    ]);
 
+}
+
+/* ---------- Normal Size ---------- */
+
+function textNormal() {
+
+    return new Uint8Array([
+        0x1D,
+        0x21,
+        0x00
+    ]);
+
+}
+
+/* ---------- Print Bitmap ---------- */
+
+function bitmapHeader(widthBytes, height) {
+
+    return new Uint8Array([
+        0x1D,
+        0x76,
+        0x30,
+        0x00,
+
+        widthBytes & 0xFF,
+        (widthBytes >> 8) & 0xFF,
+
+        height & 0xFF,
+        (height >> 8) & 0xFF
+    ]);
+
+}
+
+/* ---------- Merge Uint8Array ---------- */
+
+function mergeESC() {
+
+    let total = 0;
+
+    for (const item of arguments) {
+
+        total += item.length;
+
+    }
+
+    const result = new Uint8Array(total);
+
+    let offset = 0;
+
+    for (const item of arguments) {
+
+        result.set(item, offset);
+
+        offset += item.length;
+
+    }
+
+    return result;
 
 }
