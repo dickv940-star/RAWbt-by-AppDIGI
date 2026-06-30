@@ -641,8 +641,10 @@ else if (file.type === "application/pdf") {
    reader.readAsArrayBuffer(file);
 }
       
-});
+    });
 
+}); // tutup DOMContentLoaded
+   
 function zoom(v){
   saveState();
 
@@ -910,6 +912,7 @@ if ("serviceWorker" in navigator) {
     });
 
 
+}
 </script>
 
 </body>
