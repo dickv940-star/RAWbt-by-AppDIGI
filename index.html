@@ -93,35 +93,17 @@ border-radius:30px;
 /* LAYOUT */
 
 .container{
-
-display:grid;
-grid-template-columns:260px 1fr 280px;
-
-height:calc(100vh - 115px);
-
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
 }
-
-
-
-
-.side{
-
-padding:15px;
-
-}
-
-
 
 .card{
-
 background:white;
-
 padding:15px;
-
 border-radius:15px;
-
 margin-bottom:15px;
-
 box-shadow:0 5px 15px #0002;
 
 }
@@ -129,7 +111,6 @@ box-shadow:0 5px 15px #0002;
 
 
 h3,h2{
-
 color:#1769c2;
 
 }
@@ -142,71 +123,42 @@ color:#1769c2;
 
 
 .workspace{
-
-background:#dce6ec;
-
+width:100%;
 display:flex;
-
-align-items:center;
-
 justify-content:center;
-
+align-items:center;
+padding-bottom:90px;
 position:relative;
-
-overflow:hidden;
-
 }
 
 
-
 .toolbar{
-
-position:absolute;
-
-top:20px;
-
-background:white;
-
-padding:10px;
-
-border-radius:15px;
-
-z-index:5;
-
-box-shadow:0 5px 10px #0002;
+display:flex;
+gap:8px;
+position:static;
+background:transparent;
+box-shadow:none;
+padding:0;
 
 }
 
 
 .tool{
-
 background:#1769c2;
-
 color:white;
-
 padding:12px;
-
 border-radius:8px;
 
 }
 
 
-
-
 .paper{
-
 width:360px;
-
 min-height:520px;
-
 background:white;
-
 padding:30px;
-
 position:relative;
-
 overflow:hidden;
-
 box-shadow:0 0 20px #777;
 
 }
@@ -214,104 +166,62 @@ box-shadow:0 0 20px #777;
 
 
 .drop{
-
 height:230px;
-
 border:2px dashed #1769c2;
-
 display:flex;
-
 align-items:center;
-
 justify-content:center;
-
 text-align:center;
-
 color:#777;
 
 }
 
-
-
-
 .move{
-
 position:absolute;
-
 cursor:move;
-
 user-select:none;
 
 }
 
-
-
 #preview{
-
 max-width:80%;
-
 top:40px;
-
 left:35px;
 
 }
 
-
-
 .text{
-
 top:300px;
-
 left:50px;
-
 min-width:120px;
-
 outline:none;
 
 }
 
-
-
 .watermark{
-
 position:absolute;
-
 bottom:20px;
-
 left:0;
-
 right:0;
-
 text-align:center;
-
 padding-top:15px;
-
 border-top:1px dashed #ccc;
-
 color:#888;
 
 }
 
 
 
-
-
 /* RIGHT */
 
 .settings{
-
 background:white;
-
 padding:20px;
 
 }
 
-
-
 input,select{
-
 width:100%;
-
 padding:8px;
 
 }
@@ -323,23 +233,15 @@ padding:8px;
 /* EDIT */
 
 .editbar{
-
 display:none;
-
-position:absolute;
-
-bottom:70px;
-
-background:white;
-
-padding:10px;
-
-border-radius:15px;
-
-z-index:10;
-
-box-shadow:0 5px 15px #0003;
-
+position:fixed;
+left:0;
+right:0;
+bottom:65px;
+background:#fff;
+padding:15px;
+box-shadow:0 -4px 12px rgba(0,0,0,.2);
+z-index:9998;
 }
 
 
