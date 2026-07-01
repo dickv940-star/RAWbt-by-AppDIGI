@@ -655,11 +655,14 @@ else if (file.type === "application/pdf") {
                 const canvas = document.createElement("canvas");
                 const ctx = canvas.getContext("2d");
 
-                const viewport = page.getViewport({ scale: 2 });
+                const viewport = page.getViewport({ scale: 3 });
 
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
-
+              
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+              
                 page.render({
                     canvasContext: ctx,
                     viewport: viewport
@@ -668,7 +671,10 @@ else if (file.type === "application/pdf") {
                     preview.src = canvas.toDataURL("image/png");
                     preview.style.display = "block";
                     drop.style.display = "none";
-
+                  
+                    preview.style.background = "#ffffff";
+                    preview.style.filter = "none";
+                    preview.style.opacity = "1";
                 });
 
             });
