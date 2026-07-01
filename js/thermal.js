@@ -1,76 +1,57 @@
-function imageToESC(){
+async function imageToESC(){
 
-let img =
-document.getElementById("preview");
+    const paper = document.getElementById("paper");
 
+    if(!paper){
+        alert("Paper tidak ditemukan");
+        return null;
+    }
 
-if(!img || !img.src){
+    let width = 384;
 
-alert("Tidak ada gambar");
+    const paperSize = document.getElementById("paperSize");
 
-return null;
+    if(paperSize && paperSize.value=="80"){
+        width = 576;
+    }
 
-}
+    const canvas = await html2canvas(paper,{
+        backgroundColor:"#ffffff",
+        scale:2,
+        useCORS:true
+    });
 
+    const out = document.createElement("canvas");
 
-let canvas =
-document.createElement("canvas");
+    out.width = width;
 
+    out.height = Math.round(
+        canvas.height * (width / canvas.width)
+    );
 
-let ctx =
-canvas.getContext("2d");
+    const ctx = out.getContext("2d");
 
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0,0,out.width,out.height);
 
+    ctx.drawImage(
+        canvas,
+        0,
+        0,
+        out.width,
+        out.height
+    );
 
-let width = 384; // 58mm
-
-let paper =
-document.getElementById("paperSize");
-
-
-if(paper && paper.value=="80"){
-
-width=576; //80mm
-
-}
-
-
-
-canvas.width=width;
-
-
-canvas.height =
-img.naturalHeight *
-(width/img.naturalWidth);
-
-
-ctx.fillStyle = "#FFFFFF";
-ctx.fillRect(0,0,canvas.width,canvas.height);
-
-ctx.drawImage(
-    img,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-);
-
-
-let data =
-ctx.getImageData(
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-
-
-return convertBitmap(data);
+    return convertBitmap(
+        ctx.getImageData(
+            0,
+            0,
+            out.width,
+            out.height
+        )
+    );
 
 }
-
-
 
 function convertBitmap(img) {
 
