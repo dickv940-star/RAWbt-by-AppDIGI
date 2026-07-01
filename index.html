@@ -787,7 +787,7 @@ async function printNow(){
 
     await sendPrinter(initESC());
 
-    const img = imageToESC();
+    const img = await imageToESC();
 
     if(img instanceof Uint8Array){
 
