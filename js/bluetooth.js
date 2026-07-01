@@ -59,50 +59,50 @@ async function connectPrinter(){
         printerServer =
         await printerDevice.gatt.connect();
 
-        // coba UUID utama
+       // =======================================
+// AUTO DETECT SERVICE & CHARACTERISTIC
+// =======================================
 
-        try{
+printerWrite = null;
+printerService = null;
 
-            printerService =
-            await printerServer.getPrimaryService(
-                SERVICE_UUID
-            );
+const services =
+await printerServer.getPrimaryServices();
 
-        }catch{
+console.log("===== SERVICES =====");
 
-            printerService =
-            await printerServer.getPrimaryService(
-                FALLBACK_SERVICE
-            );
+for(const service of services){
 
-        }
+    console.log("SERVICE :", service.uuid);
 
-        const chars =
-        await printerService.getCharacteristics();
+    const chars =
+    await service.getCharacteristics();
 
-        printerWrite = null;
+    for(const c of chars){
 
-        console.log("===== CHARACTERISTIC =====");
+        console.log(
+            "CHAR :",
+            c.uuid,
+            c.properties
+        );
 
-        for(const c of chars){
+        if(
+            c.properties.write ||
+            c.properties.writeWithoutResponse
+        ){
 
-            console.log(
-                c.uuid,
-                c.properties
-            );
+            printerService = service;
+            printerWrite = c;
 
-            if(
-                c.properties.write ||
-                c.properties.writeWithoutResponse
-            ){
-
-                printerWrite = c;
-
-                break;
-
-            }
+            break;
 
         }
+
+    }
+
+    if(printerWrite) break;
+
+}
 
         if(!printerWrite){
 
