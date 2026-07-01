@@ -1,7 +1,19 @@
 async function imageToESC(){
 
     const paper = document.getElementById("paper");
+// Simpan outline yang sedang dipilih
+const selected = paper.querySelector(".selected");
+if(selected){
+    selected.classList.remove("selected");
+}
 
+// Sembunyikan area drop saat render
+const drop = document.getElementById("drop");
+const oldDrop = drop ? drop.style.display : "";
+
+if(drop){
+    drop.style.display = "none";
+}
     if(!paper){
         alert("Paper tidak ditemukan");
         return null;
@@ -17,7 +29,7 @@ async function imageToESC(){
 
     const canvas = await html2canvas(paper,{
         backgroundColor:"#ffffff",
-        scale:2,
+        scale:3,
         useCORS:true
     });
 
@@ -42,14 +54,25 @@ async function imageToESC(){
         out.height
     );
 
-    return convertBitmap(
-        ctx.getImageData(
-            0,
-            0,
-            out.width,
-            out.height
-        )
-    );
+   const bitmap = convertBitmap(
+    ctx.getImageData(
+        0,
+        0,
+        out.width,
+        out.height
+    )
+);
+
+// Kembalikan tampilan editor
+if(drop){
+    drop.style.display = oldDrop;
+}
+
+if(selected){
+    selected.classList.add("selected");
+}
+
+return bitmap;
 
 }
 
@@ -91,13 +114,16 @@ function convertBitmap(img) {
                 const g = img.data[pos + 1];
                 const b = img.data[pos + 2];
 
-                const gray = (r + g + b) / 3;
+                // Grayscale dengan bobot luminance
+const gray =
+0.299 * r +
+0.587 * g +
+0.114 * b;
 
-                if (gray < 128) {
-
-                    byte |= (0x80 >> bit);
-
-                }
+// Threshold yang lebih cocok untuk printer thermal
+if (gray < 160) {
+    byte |= (0x80 >> bit);
+}
 
             }
 
