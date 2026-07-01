@@ -181,7 +181,11 @@ color:#777;
   cursor:grab;
   touch-action:none;
 }
-
+.selected{
+outline:2px solid #2196f3;
+outline-offset:2px;
+}
+  
 .move:active{
   cursor:grabbing;
   
@@ -204,16 +208,17 @@ position:absolute;
 
 .watermark{
 position:absolute;
-bottom:20px;
-left:0;
-right:0;
-text-align:center;
-padding-top:15px;
-border-top:1px dashed #ccc;
-color:#888;
-
+left:60px;
+top:430px;
+cursor:move;
+touch-action:none;
 }
-
+  
+.selected{
+outline:2px solid #1976d2;
+outline-offset:3px;
+}
+  
 /* RIGHT */
 
 .settings{
@@ -469,17 +474,25 @@ Drop Image / PDF
 </div>
 
 
-<img id="preview" class="move">
+<img
+id="preview"
+class="move"
+onclick="selectObject(this)">
 
 
-<div class="text move" contenteditable="true">
+<div
+class="text move"
+contenteditable="true"
+onclick="selectObject(this)">
 
 Tulis text
 
 </div>
 
 
-<div class="watermark">
+<div
+class="watermark move"
+onclick="selectObject(this)">
 
 RAWbt by AppDIGI
 
@@ -552,7 +565,30 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 const paper = document.getElementById("paper");
 const preview = document.getElementById("preview");
 const drop = document.getElementById("drop");
-  
+let activeObject = null;
+   
+function selectObject(el){
+
+    activeObject = el;
+
+    if(activeObject.dataset.scale===undefined){
+
+        activeObject.dataset.scale=1;
+
+        activeObject.dataset.rotate=0;
+
+    }
+
+    document
+    .querySelectorAll(".selected")
+    .forEach(obj=>{
+        obj.classList.remove("selected");
+    });
+
+    activeObject.classList.add("selected");
+
+}
+   
 let history = [];
 let currentState = {
   x: 0,
@@ -569,6 +605,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const drop = document.getElementById("drop");
     const preview = document.getElementById("preview");
 
+    dragElement(preview);
+  
+    dragElement(document.querySelector(".text"));
+  
+    dragElement(document.querySelector(".watermark"));
+  
     if (!fileInput || !drop || !preview) {
         console.error("DOM belum siap");
         return;
@@ -646,30 +688,67 @@ else if (file.type === "application/pdf") {
 }); // tutup DOMContentLoaded
    
 function zoom(v){
-  saveState();
 
-  currentState.scale = Math.max(0.1, currentState.scale + v);
-  applyTransform();
+    if(!activeObject) return;
+
+    let s=parseFloat(activeObject.dataset.scale);
+
+    s+=v;
+
+    if(s<0.2) s=0.2;
+
+    activeObject.dataset.scale=s;
+
+    applyTransform();
+
 }
 
 function rotate(){
-  saveState();
 
-  currentState.rotate += 90;
-  applyTransform();
+    if(!activeObject) return;
+
+    let r=parseFloat(activeObject.dataset.rotate);
+
+    r+=90;
+
+    activeObject.dataset.rotate=r;
+
+    applyTransform();
+
 }
 
 function fit(){
-  saveState();
 
-  currentState.x = 0;
-  currentState.y = 0;
-  currentState.scale = 1;
-  currentState.rotate = 0;
+    if(!activeObject){
+        alert("Pilih objek terlebih dahulu");
+        return;
+    }
 
-  applyTransform();
+    const paperRect = paper.getBoundingClientRect();
+
+    const margin = 10;
+
+    activeObject.style.left = margin + "px";
+    activeObject.style.top = margin + "px";
+
+    if(activeObject.tagName==="IMG"){
+
+        activeObject.style.width =
+        (paperRect.width-margin*2)+"px";
+
+        activeObject.style.height="auto";
+
+    }
+
+    currentState.x=0;
+    currentState.y=0;
+    currentState.scale=1;
+    currentState.rotate=0;
+
+    applyTransform();
+
 }
-  
+   
 const zoomRange = document.getElementById("zoomRange");
 const rotateRange = document.getElementById("rotateRange");
 
@@ -751,45 +830,77 @@ e.style.display=="block"
 
 function addText(){
 
+    let t = document.createElement("div");
 
-let t =
-document.createElement("div");
-t.className="text move";
-t.contentEditable=true;
-t.innerHTML="Text Baru";
-paper.appendChild(t);
-dragElement(t);
+    t.className = "text move";
 
+    t.contentEditable = true;
+
+    t.innerHTML = "Text Baru";
+
+    t.style.left = "40px";
+    t.style.top = "120px";
+
+    paper.appendChild(t);
+
+    dragElement(t);
+
+    selectObject(t);
 
 }
 
 function cmd(c){
-
+  
 document.execCommand(c);
 
 }
 
-function dragElement(el) {
-    let offsetX = 0, offsetY = 0, isDown = false;
+function dragElement(el){
 
-    el.addEventListener("pointerdown", (e) => {
-        isDown = true;
-        offsetX = e.clientX - el.offsetLeft;
-        offsetY = e.clientY - el.offsetTop;
+    let startX=0;
+    let startY=0;
+
+    let dragging=false;
+
+    el.style.position="absolute";
+
+    el.addEventListener("pointerdown",(e)=>{
+
+        selectObject(el);
+
+        dragging=true;
+
+        startX=e.clientX-el.offsetLeft;
+        startY=e.clientY-el.offsetTop;
+
+        el.setPointerCapture(e.pointerId);
+
+        e.stopPropagation();
+
     });
 
-    window.addEventListener("pointermove", (e) => {
-        if (!isDown) return;
+    el.addEventListener("pointermove",(e)=>{
 
-        el.style.left = (e.clientX - offsetX) + "px";
-        el.style.top = (e.clientY - offsetY) + "px";
+        if(!dragging) return;
+
+        el.style.left=(e.clientX-startX)+"px";
+        el.style.top=(e.clientY-startY)+"px";
+
     });
 
-    window.addEventListener("pointerup", () => {
-        isDown = false;
+    el.addEventListener("pointerup",()=>{
+
+        dragging=false;
+
     });
+
+    el.addEventListener("pointercancel",()=>{
+
+        dragging=false;
+
+    });
+
 }
-      
 
 function fontSize(v){
 
@@ -800,49 +911,21 @@ false,
 );
 
 
-}
+}ok 
 
+function applyTransform(){
 
-// DRAG
+    if(!activeObject) return;
 
-let drag = false;
-let startX = 0;
-let startY = 0;
+    const scale=activeObject.dataset.scale||1;
 
-paper.addEventListener("pointerdown", (e)=>{
-  
-    saveState();
-  
-    drag = true;
+    const rotate=activeObject.dataset.rotate||0;
 
-    startX = e.clientX - currentState.x;
-    startY = e.clientY - currentState.y;
+    activeObject.style.transform=
 
-    paper.setPointerCapture(e.pointerId);
-});
+    `scale(${scale})
+     rotate(${rotate}deg)`;
 
-paper.addEventListener("pointermove", (e)=>{
-    if(!drag) return;
-
-    currentState.x = e.clientX - startX;
-    currentState.y = e.clientY - startY;
-
-    applyTransform()
-});
-
-paper.addEventListener("pointerup", ()=>{
-    drag = false;
-});
-
-paper.addEventListener("pointercancel", ()=>{
-    drag = false;
-});
-
-function applyTransform() {
-    paper.style.transform =
-        `translate(${currentState.x}px, ${currentState.y}px)
-         scale(${currentState.scale})
-         rotate(${currentState.rotate}deg)`;
 }
   
 function back() {
@@ -857,7 +940,24 @@ function back() {
 
   applyTransform();
 } 
-  
+ const trashBtn = document.getElementById("trashBtn");
+
+trashBtn.addEventListener("click", () => {
+
+    if (!activeObject) {
+        alert("Pilih objek terlebih dahulu.");
+        return;
+    }
+
+    // Jangan hapus area paper
+    if (activeObject.id === "paper") return;
+
+    activeObject.remove();
+
+    activeObject = null;
+
+});
+   
 // INSTALL APP
 
 
