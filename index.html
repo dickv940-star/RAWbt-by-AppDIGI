@@ -456,8 +456,8 @@ Fit
 </div>
 
 <button class="blue"
-onclick="back()">
-← Back
+onclick="location.reload()">
+↻ Reset
 </button>
 
 </div>
@@ -589,14 +589,6 @@ function selectObject(el){
     activeObject.classList.add("selected");
 
 }
-   
-let history = [];
-let currentState = {
-  x: 0,
-  y: 0,
-  scale: 1,
-  rotate: 0
-};
 
 // ambil DOM SETELAH PAGE SIAP
   console.log(" FILE INPUT LOADED");
@@ -741,12 +733,10 @@ function fit(){
 
     }
 
-    currentState.x=0;
-    currentState.y=0;
-    currentState.scale=1;
-    currentState.rotate=0;
+     activeObject.dataset.scale=1;
+     activeObject.dataset.rotate=0;
 
-    applyTransform();
+     applyTransform();
 
 }
    
@@ -755,17 +745,23 @@ const rotateRange = document.getElementById("rotateRange");
 
 if (zoomRange) {
     zoomRange.oninput = function () {
-  currentState.scale = this.value / 100;
-  applyTransform();
-};
+ if(!activeObject) return;
+
+activeObject.dataset.scale =
+this.value/100;
+
+applyTransform();
   
 }
 
 if (rotateRange) {
    rotateRange.oninput = function () {
-  currentState.rotate = this.value;
-  applyTransform();
-};
+  if(!activeObject) return;
+
+activeObject.dataset.rotate =
+this.value;
+
+applyTransform();
   
 }
   
@@ -797,14 +793,6 @@ async function printNow(){
 
     await sendPrinter(cutPaper());
 
-}
-function saveState() {
-    history.push({
-        x: currentState.x,
-        y: currentState.y,
-        scale: currentState.scale,
-        rotate: currentState.rotate
-    });
 }
  function openFile(){
     const input = document.getElementById("file");
@@ -928,36 +916,6 @@ function applyTransform(){
      rotate(${rotate}deg)`;
 
 }
-  
-function back() {
-  if (history.length === 0) return;
-
-  const prev = history.pop();
-
-  currentState.x = prev.x;
-  currentState.y = prev.y;
-  currentState.scale = prev.scale;
-  currentState.rotate = prev.rotate;
-
-  applyTransform();
-} 
- const trashBtn = document.getElementById("trashBtn");
-
-trashBtn.addEventListener("click", () => {
-
-    if (!activeObject) {
-        alert("Pilih objek terlebih dahulu.");
-        return;
-    }
-
-    // Jangan hapus area paper
-    if (activeObject.id === "paper") return;
-
-    activeObject.remove();
-
-    activeObject = null;
-
-});
    
 // INSTALL APP
 
