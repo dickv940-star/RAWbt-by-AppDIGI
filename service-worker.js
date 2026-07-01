@@ -1,4 +1,4 @@
-const CACHE_NAME="RAWbt-AppDIGI-v1";
+const CACHE_NAME = "rawbt-v2";
 
 
 const FILES=[
