@@ -745,24 +745,28 @@ const rotateRange = document.getElementById("rotateRange");
 
 if (zoomRange) {
     zoomRange.oninput = function () {
- if(!activeObject) return;
 
-activeObject.dataset.scale =
-this.value/100;
+        if(!activeObject) return;
 
-applyTransform();
-  
+        activeObject.dataset.scale =
+        this.value / 100;
+
+        applyTransform();
+
+    };
 }
 
 if (rotateRange) {
-   rotateRange.oninput = function () {
-  if(!activeObject) return;
+    rotateRange.oninput = function () {
 
-activeObject.dataset.rotate =
-this.value;
+        if(!activeObject) return;
 
-applyTransform();
-  
+        activeObject.dataset.rotate =
+        this.value;
+
+        applyTransform();
+
+    };
 }
   
 async function printNow(){
