@@ -506,9 +506,12 @@ RAWbt by AppDIGI
 <div class="editbar" id="editbar">
 
 <button onclick="addText()">➕</button>
-<button onclick="cmd('bold')"><b>B</b></button>
-<button onclick="cmd('italic')"><i>I</i></button>
-<button onclick="cmd('underline')"><u>U</u></button>
+  
+<button onmousedown="event.preventDefault();cmd('bold')"><b>B</b></button>
+
+<button onmousedown="event.preventDefault();cmd('italic')"><i>I</i></button>
+
+<button onmousedown="event.preventDefault();cmd('underline')"><u>U</u></button>
 
 <select onchange="fontSize(this.value)">
 <option value="16">16</option>
@@ -843,8 +846,17 @@ function addText(){
 }
 
 function cmd(c){
-  
-document.execCommand(c);
+
+    if(!activeObject) return;
+
+    if(!activeObject.isContentEditable){
+        alert("Pilih text terlebih dahulu.");
+        return;
+    }
+
+    activeObject.focus();
+
+    document.execCommand(c,false,null);
 
 }
 
@@ -897,12 +909,18 @@ function dragElement(el){
 
 function fontSize(v){
 
-document.execCommand(
-"fontSize",
-false,
-7
-);
+    if(!activeObject) return;
 
+    activeObject.focus();
+
+    document.execCommand("fontSize", false, 7);
+
+    activeObject.querySelectorAll("font[size='7']").forEach(f=>{
+
+        f.removeAttribute("size");
+        f.style.fontSize = v + "px";
+
+    });
 
 }
 
